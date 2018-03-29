@@ -5,7 +5,7 @@ const nodeRedStorageModel = require('../../models/nodeRedStorageModel');
 const nodeRedUserModel = require('../../models/nodeRedUserModel');
 
 module.exports = function () {
-    migrationModel.model.remove();
-    nodeRedStorageModel.model.remove();
-    nodeRedUserModel.model.remove();
+    migrationModel.model.collection.drop();
+    nodeRedStorageModel.model.collection.drop();
+    nodeRedUserModel.model.collection.drop();
 }

@@ -28,7 +28,7 @@ let connection,
         after(() => {
              queue.delete();
              red.stop();
-             process.exit();
+             clearMongoAccount();
         })
 
         it('server start', (done) => {
