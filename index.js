@@ -19,16 +19,12 @@ const defaultConfig = require('./config'),
     filter: /(.+Factory)\.js$/
   });
 
-  var EventEmitter = require('events').EventEmitter;
-  var server = new EventEmitter; 
-
 mongoose.Promise = Promise;
 
 module.exports = {
   config: defaultConfig,
   factories: factories,
   migrator: migrator,
-  server: server,
   red: RED,
   init: config => {
 
@@ -58,13 +54,10 @@ module.exports = {
     app.use(config.nodered.httpAdminRoot, RED.httpAdmin);
     app.use(config.nodered.httpNodeRoot, RED.httpNode);
 
-    if (config.nodered.httpServer) {
+    if (config.nodered.httpServer)
       httpServer.listen(config.rest.port);
-    }
 
-    RED.start().then(() => {
-      server.emit('serverStart')
-    });  
+    RED.start();
   }
 };
 
