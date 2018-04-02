@@ -25,6 +25,7 @@ module.exports = {
   config: defaultConfig,
   factories: factories,
   migrator: migrator,
+  red: RED,
   init: config => {
 
     config = _.merge(defaultConfig, config);
@@ -42,7 +43,7 @@ module.exports = {
     config.nodered.nodesDir = _.union(
       _.isString(config.nodered.customNodesDir) ? [config.nodered.customNodesDir] : config.nodered.customNodesDir,
       _.isString(config.nodered.nodesDir) ? [config.nodered.nodesDir] : config.nodered.nodesDir);
-
+    
     let app = express();
     let httpServer = http.createServer(app);
     app.use(cors());
@@ -57,7 +58,6 @@ module.exports = {
       httpServer.listen(config.rest.port);
 
     RED.start();
-
   }
 };
 
