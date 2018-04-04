@@ -11,10 +11,9 @@ This module is a part of middleware services. You can install it in 2 ways:
 
 #### About
 
-This module extends the standard set of node-red.
-It allows to run migration already predefined flows, as well as deploy a node-red to the specified address.
+This module works on the basis of Node-Red. As is known, Node-red is  a programming tool for wiring together hardware devices, APIs and online services. Middleware-service-sdk extends the standard sets of components of Node-red such as.
 
-#### New nodes
+#### New components
 
 | type of node | name of node | description |
 | ------------ | ------------ | ----------- |
@@ -24,15 +23,21 @@ It allows to run migration already predefined flows, as well as deploy a node-re
 | connectors   | mongo        | single mongoose query connector
 | utils        | query to mongo | converts query params to mongo like query
 
+#### How it work
 
-### Deploy a node-red
+This module uses mongoDB as a database. Module creates 3 collections:  migrations, noderedstorage and  nodereduser.
+ 
+Collection 'migrations' keeps id flows which was subjected to migration.
+Collection 'noderedstorages' keeps all created flows.
+Collection 'noderedusers' keeps information about an admin.
 
-It implements the method 'init'. It accept config with node-red http server then run it.
+In order to start a service we tentatively need to add an admin`s record to the noderedusers collection. And after that we can start to work.
 
+After deploying your flow it will save in your project, by default it is a folder 'migration'. Also it saves in a database in the noderedstoreges collection.
 
-### Migrations
+After service restart, he will upload earlier created flows.
 
-It implements the method 'migrator.run'. It accept three parameters: uri of mongodb, folder with predefined flows, collection of mongodb
+In the event if you need to import your flows in the another database, there is a migration tool in the service-sdk.
 
 ##### сonfigure your .env
 
