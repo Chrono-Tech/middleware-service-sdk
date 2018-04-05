@@ -39,6 +39,48 @@ After service restart, he will upload earlier created flows.
 
 In the event if you need to import your flows in the another database, there is a migration tool in the service-sdk.
 
+#### Example
+
+Let`s make simple API where we can register our new wallet addresses.
+
+Step by step:
+
+1) add 'http end-point' component - it is our request and name it 'create addr'
+
+![create_addr](resource/created_addr.png)
+
+2) add service-sdk - 'amqp in' component to be connected to the rabbitmq queue/exchange, named it 'post addresses'
+
+![amqp_in](resource/amqp_in.png)
+
+3) add 'function' component for the 'amqp in'
+
+![function_amqp_in](resource/function_for_amqp.png)
+
+4) add 'function' component that will allow us to process the request to add new addresses
+
+![request_handler](resource/Request_handler.png)
+
+5) add service-sdk - 'mongo' component that will save our new record in the mongoDB
+
+![mongo](resource/mongo.png)
+
+6) add 'switch' component that will route messages for respond and event in rabbitmq
+
+7) add 'function' component that will forms the answer for responce
+
+![function_for_responce](resource/function_for_responce.png)
+
+8) add 'function' component that will forms event in rabbitmq
+
+![function_for_amqp](resource/function_for_rabbitmq.png)
+
+9) Finally, add the 'http responce' and 'amqp out' components, where 'http responce' send responce and 'amqp out' send event to rabbitmq
+
+![finally](resource/Finall.png)
+
+10) We can deploy our flow 
+
 ##### сonfigure your .env
 
 To apply your configuration, create a .env file in root folder of repo (in case it's not present already).
@@ -48,6 +90,7 @@ Below is the expamle configuration:
 MONGO_URI=mongodb://localhost:27017/data
 REST_PORT=8081
 NODERED_MONGO_URI=mongodb://localhost:27018/data
+RABBIT_URI=amqp://localhost:5672
 
 ```
 
@@ -58,6 +101,7 @@ The options are presented below:
 | MONGO_URI   | the URI string for mongo connection
 | REST_PORT   | rest plugin port
 | NODERED_MONGO_URI   | the URI string for mongo collection for keeping node-red users and flows (optional, if omitted - then default MONGO_URI will be used)
+| RABBIT_URI  | rabbitmq URI connection string
 
 License
 ----
