@@ -22,10 +22,6 @@ let config = {
       useData: 1
     }
   },
-  rabbit: {
-    url: 'amqp://localhost:5672',
-    serviceName: 'app_sdk'
-  },
   rest: {
     domain: 'localhost',
     port: 8081
