@@ -1,4 +1,9 @@
 /**
+ * Copyright 2017–2018, LaborX PTY
+ * Licensed under the AGPL Version 3 licenses.
+ */
+
+/**
  * Mongoose model. Used to store node-red data.
  * @module models/nodeRedStorageModel
  * @returns {Object} Mongoose model

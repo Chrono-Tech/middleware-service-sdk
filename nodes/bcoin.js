@@ -1,3 +1,8 @@
+/**
+ * Copyright 2017–2018, LaborX PTY
+ * Licensed under the AGPL Version 3 licenses.
+ */
+
 const Promise = require('bluebird'),
   _ = require('lodash'),
   path = require('path'),
