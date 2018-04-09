@@ -29,7 +29,7 @@
     "migrate_red": "node migrate run"
   },
   "author": "",
-  "license": "ISC",
+  "license": "AGPL-3.0",
   "description": "",
   "devDependencies": {
     "babel-eslint": "^8.0.2",
