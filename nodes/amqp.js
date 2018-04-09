@@ -1,3 +1,8 @@
+/**
+ * Copyright 2017–2018, LaborX PTY
+ * Licensed under the AGPL Version 3 licenses.
+ */
+
 const amqp = require('amqp-ts'),
   _ = require('lodash');
 
