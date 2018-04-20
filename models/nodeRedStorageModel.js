@@ -29,4 +29,4 @@ module.exports = {
   get model(){
     return model;
   }
-}
+};

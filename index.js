@@ -32,13 +32,14 @@ module.exports = {
 
     mongoose.connect(config.nodered.mongo.uri, {useMongoClient: true});
 
-    require('require-all')({
-      dirname: path.join(__dirname, '/models'),
-      filter: /(.+Model)\.js$/,
-      resolve: Model => {
-        return Model.init(config.nodered.mongo);
-      }
-    });
+    if (!config.nodered.useLocalStorage)
+      require('require-all')({
+        dirname: path.join(__dirname, '/models'),
+        filter: /(.+Model)\.js$/,
+        resolve: Model => {
+          return Model.init(config.nodered.mongo);
+        }
+      });
 
     config.nodered.nodesDir = _.union(
       _.isString(config.nodered.customNodesDir) ? [config.nodered.customNodesDir] : config.nodered.customNodesDir,
