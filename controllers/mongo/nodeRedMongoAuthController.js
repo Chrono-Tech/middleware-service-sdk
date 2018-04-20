@@ -3,7 +3,7 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-const NodeRedUserModel = require('../models/nodeRedUserModel'),
+const NodeRedUserModel = require('../../models/nodeRedUserModel'),
   when = require('when'),
   bcrypt = require('bcryptjs');
 

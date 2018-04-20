@@ -43,7 +43,9 @@ module.exports = {
     config.nodered.nodesDir = _.union(
       _.isString(config.nodered.customNodesDir) ? [config.nodered.customNodesDir] : config.nodered.customNodesDir,
       _.isString(config.nodered.nodesDir) ? [config.nodered.nodesDir] : config.nodered.nodesDir);
-    
+
+    config.nodered.adminAuth.init(config.nodered);
+
     let app = express();
     let httpServer = http.createServer(app);
     app.use(cors());
