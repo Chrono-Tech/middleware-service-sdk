@@ -9,7 +9,8 @@ const NodeRedUserModel = require('../../models/nodeRedUserModel'),
 
 module.exports = {
   type: 'credentials',
-  users: function (username) {
+  init: (globalSettings)=>{},
+    users: function (username) {
     return when.resolve((async () => {
 
       let user = await NodeRedUserModel.model.findOne({username: username, isActive: true});

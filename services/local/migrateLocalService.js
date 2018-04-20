@@ -8,11 +8,8 @@ require('dotenv').config();
 const config = require('../../config'),
   path = require('path'),
   fs = require('fs-extra'),
-  bunyan = require('bunyan'),
   _ = require('lodash'),
-  requireAll = require('require-all'),
-  Promise = require('bluebird'),
-  log = bunyan.createLogger({name: 'migrator'});
+  requireAll = require('require-all');
 
 module.exports = async (uri, folder) => {
 
