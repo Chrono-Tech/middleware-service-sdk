@@ -1,18 +1,14 @@
+/**
+ * Copyright 2017–2018, LaborX PTY
+ * Licensed under the AGPL Version 3 license.
+ */
+
 const NodeRedUserModel = require('../models/nodeRedUserModel'),
   when = require('when'),
   bcrypt = require('bcryptjs');
 
-let settings = {};
-
 module.exports = {
   type: 'credentials',
-  init: (globalSettings) => {
-    settings = globalSettings;
-    console.log(settings);
-    process.exit(0);
-    return when.resolve();
-
-  },
   users: function (username) {
     return when.resolve((async () => {
 
