@@ -1,4 +1,4 @@
-# middleware-eth-rest [![Build Status](https://travis-ci.org/ChronoBank/middleware-eth-rest.svg?branch=master)](https://travis-ci.org/ChronoBank/middleware-eth-rest)
+# middleware-service-sdk
 
 Middleware service for which expose rest api
 
@@ -10,50 +10,76 @@ This module is a part of middleware services. You can install it in 2 ways:
 2) by hands: just clone the repo, do 'npm install', set your .env - and you are ready to go
 
 #### About
-This module is used for interaction with middleware. This happens through the layer, which is built on node-red.
-So, you don't need to write any code - you can create your own flow with UI tool supplied by node-red itself. Access by this route:
-```
-/admin
-````
 
+This module works on the basis of Node-Red. As is known, Node-red is  a programming tool for wiring together hardware devices, APIs and online services. Middleware-service-sdk extends the standard sets of components of Node-red such as.
 
-### Migrations
-Migrations includes the predefined users for node-red (in order to access /admin route), and already predefined flows.
-In order to apply migrations, type:
-```
-npm run migrate_red
-```
-The migrator wil look for the mongo_db connection string in ecosystem.config.js, in .env or from args. In case, you want run migrator with argument, you can do it like so:
-```
-npm run migrate_red mongodb://localhost:27017/data
-```
+#### New components
 
-#### Predefined Routes with node-red flows
+| type of node | name of node | description |
+| ------------ | ------------ | ----------- |
+| input        | amqp         | AMQP input node. Connects to a server and subscribes to the specified exchange or queue
+| output       | amqp         | AMQP output node. Connects to a server and delivers the message payload to the specified exchange or queue
+| function     | async function| A JavaScript function block to run against the messages being received by th node
+| connectors   | mongo        | single mongoose query connector
+| utils        | query to mongo | converts query params to mongo like query
 
+#### How it work
 
-The available routes are listed below:
+This module uses mongoDB as a database. Module creates 3 collections:  migrations, noderedstorage and  nodereduser.
+ 
+Collection 'migrations' keeps id flows which was subjected to migration.
+Collection 'noderedstorages' keeps all created flows.
+Collection 'noderedusers' keeps information about an admin.
 
-| route | methods | params | description |
-| ------ | ------ | ------ | ------ |
-| /addr   | POST | ``` {address: <string>, erc20tokens: [<string>]} ``` | register new address on middleware. erc20tokens - is an array of erc20Tokens, which balance changes this address will listen to.
-| /addr   | DELETE | ``` {address: <string>} ``` | remove an address from middleware
-| /addr/{address}/token   | POST | ``` {erc20tokens: [<string>]} ``` | push passed erc20tokens to an exsiting one for the registered user.
-| /addr/{address}/token   | POST | ``` {erc20tokens: [<string>]} ``` | pull passed erc20tokens from an exsiting one for the registered user.
-| /addr/{address}/balance   | GET |  | retrieve balance of the registered address
-| /tx/{address}/history/{startBlock}/{endBlock}   | GET |  | retrieve transactions for the regsitered address in a block range. endBlock - is optional (if not specified - the range will be = 100).
-| /tx   | POST | ``` {tx: <string>} ``` | broadcast raw transaction
-| /tx/{hash}   | GET | | return tx by its hash
-| /events   | GET | |returns list of all available events
-| /events/{event_name}   | GET | |returns an event's collection
+In order to start a service we tentatively need to add an admin`s record to the noderedusers collection. And after that we can start to work.
 
+After deploying your flow it will save in your project, by default it is a folder 'migration'. Also it saves in a database in the noderedstoreges collection.
 
-#### REST guery language
+After service restart, he will upload earlier created flows.
 
-Every collection could be fetched with an additional query. The api use [query-to-mongo](https://www.npmjs.com/package/query-to-mongo) plugin as a backbone layer between GET request queries and mongo's. For instance, if we want to fetch all recods from collection 'issue', where issueNumber < 20, then we will make a call like that:
-```
-curl http://localhost:8080/events/issue?issueNumber<20
-```
+In the event if you need to import your flows in the another database, there is a migration tool in the service-sdk.
 
+#### Example
+
+Let`s make simple API where we can register our new wallet addresses.
+
+Step by step:
+
+1) add 'http end-point' component - it is our request and name it 'create addr'
+
+![create_addr](resource/created_addr.png)
+
+2) add service-sdk - 'amqp in' component to be connected to the rabbitmq queue/exchange, named it 'post addresses'
+
+![amqp_in](resource/amqp_in.png)
+
+3) add 'function' component for the 'amqp in'
+
+![function_amqp_in](resource/function_for_amqp.png)
+
+4) add 'function' component that will allow us to process the request to add new addresses
+
+![request_handler](resource/Request_handler.png)
+
+5) add service-sdk - 'mongo' component that will save our new record in the mongoDB
+
+![mongo](resource/mongo.png)
+
+6) add 'switch' component that will route messages for respond and event in rabbitmq
+
+7) add 'function' component that will forms the answer for responce
+
+![function_for_responce](resource/function_for_responce.png)
+
+8) add 'function' component that will forms event in rabbitmq
+
+![function_for_amqp](resource/function_for_rabbitmq.png)
+
+9) Finally, add the 'http responce' and 'amqp out' components, where 'http responce' send responce and 'amqp out' send event to rabbitmq
+
+![finally](resource/Finall.png)
+
+10) We can deploy our flow 
 
 ##### сonfigure your .env
 
@@ -63,11 +89,9 @@ Below is the expamle configuration:
 ```
 MONGO_URI=mongodb://localhost:27017/data
 REST_PORT=8081
-NETWORK=development
-WEB3_URI=/tmp/development/geth.ipc
 NODERED_MONGO_URI=mongodb://localhost:27018/data
-SMART_CONTRACTS_PATH=../node_modules/chronobank-smart-contracts/build/contracts
-NODERED_AUTO_SYNC_MIGRATIONS=true
+RABBIT_URI=amqp://localhost:5672
+
 ```
 
 The options are presented below:
@@ -76,13 +100,13 @@ The options are presented below:
 | ------ | ------ |
 | MONGO_URI   | the URI string for mongo connection
 | REST_PORT   | rest plugin port
-| NETWORK   | network name (alias)- is used for connecting via ipc (see block processor section)
-| NETWORK   | network name (alias)- is used for connecting via ipc (see block processor section)
 | NODERED_MONGO_URI   | the URI string for mongo collection for keeping node-red users and flows (optional, if omitted - then default MONGO_URI will be used)
-| SMART_CONTRACTS_PATH   | the path to compiled smart contracts (optional, if omitted - then the default dir from node_modules will be used)
-| NODERED_AUTO_SYNC_MIGRATIONS   | autosync migrations on start (default = yes)
+| RABBIT_URI  | rabbitmq URI connection string
 
 License
 ----
+ [GNU AGPLv3](LICENSE)
 
-MIT
+Copyright
+----
+LaborX PTY

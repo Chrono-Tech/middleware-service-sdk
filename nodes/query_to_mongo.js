@@ -1,3 +1,8 @@
+/**
+ * Copyright 2017–2018, LaborX PTY
+ * Licensed under the AGPL Version 3 licenses.
+ */
+
 const q2m = require('query-to-mongo');
 
 module.exports = function (RED) {

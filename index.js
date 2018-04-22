@@ -1,6 +1,11 @@
 /**
+ * Copyright 2017–2018, LaborX PTY
+ * Licensed under the AGPL Version 3 licenses.
+ */
+
+/**
  * Expose an express web server
- * @module middleware-eth-rest
+ * @module middleware-sdk
  */
 
 const defaultConfig = require('./config'),

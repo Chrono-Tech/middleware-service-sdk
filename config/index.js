@@ -1,4 +1,9 @@
 /**
+ * Copyright 2017–2018, LaborX PTY
+ * Licensed under the AGPL Version 3 license.
+ */
+
+/**
  * Chronobank/eth-rest configuration
  * @module config
  * @returns {Object} Configuration
@@ -21,10 +26,6 @@ let config = {
       collectionPrefix: 'sdk',
       useData: 1
     }
-  },
-  rabbit: {
-    url: 'amqp://localhost:5672',
-    serviceName: 'app_sdk'
   },
   rest: {
     domain: 'localhost',
