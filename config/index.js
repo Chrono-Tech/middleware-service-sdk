@@ -13,7 +13,7 @@ const path = require('path'),
   bunyan = require('bunyan'),
   util = require('util'),
   mongoose = require('mongoose'),
-  log = bunyan.createLogger({name: 'core.rest'});
+  log = bunyan.createLogger({name: 'core.sdk'});
 
 let config = {
   mongo: {
@@ -36,6 +36,7 @@ let config = {
       uri: 'mongodb://localhost:27017/data',
       collectionPrefix: ''
     },
+    useLocalStorage: true,
     migrationsDir: path.join(__dirname, '../migrations'),
     adminAuth: require('../controllers/nodeRedAuthController'),
     storageModule: require('../controllers/nodeRedStorageController'),
