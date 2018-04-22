@@ -1,31 +1,20 @@
-/**
- * Copyright 2017–2018, LaborX PTY
- * Licensed under the AGPL Version 3 license.
- */
+const controllers = {
+    local: require('./local/nodeRedLocalAuthController'),
+    mongo: require('./mongo/nodeRedMongoAuthController')
+  },
+  when = require('when');
 
-const NodeRedUserModel = require('../models/nodeRedUserModel'),
-  when = require('when'),
-  bcrypt = require('bcryptjs');
+let settings = {};
 
 module.exports = {
   type: 'credentials',
-  users: function (username) {
-    return when.resolve((async () => {
-
-      let user = await NodeRedUserModel.model.findOne({username: username, isActive: true});
-
-      return user ?
-        {username: user.username, permissions: user.permissions} : null;
-    })());
+  init: (globalSettings) => {
+    settings = globalSettings;
+    (settings.useLocalStorage ? controllers.local : controllers.mongo).init(settings);
+    return when.resolve();
   },
-  authenticate: function (username, password) {
-    return when.resolve((async () => {
-      let user = await NodeRedUserModel.model.findOne({username: username, isActive: true});
-      return user && bcrypt.compare(password, user.password) ?
-        {username: user.username, permissions: user.permissions} : null;
-
-    })());
-  },
+  users: (...params) => (settings.useLocalStorage ? controllers.local : controllers.mongo).users(...params),
+  authenticate: (...params) => (settings.useLocalStorage ? controllers.local : controllers.mongo).authenticate(...params),
   default: function () {
     return when.resolve({anonymous: false});
   }
