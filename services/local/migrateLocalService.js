@@ -34,6 +34,7 @@ module.exports = async (uri, folder) => {
       update: (criteria, data) => {
         migrationSet[collectionName] = migrationSet[collectionName] || [];
 
+
         let record = _.find(migrationSet[collectionName], criteria);
 
         if (!record) {
@@ -41,7 +42,8 @@ module.exports = async (uri, folder) => {
         }
 
         _.pull(migrationSet[collectionName], record);
-        record = _.chain(record).pick(['path', 'type', 'meta']).merge(data.$set).value();
+
+        record = _.chain(record).pick(['path', 'type', 'meta', 'disabled', 'info']).merge(data.$set).value();
         migrationSet[collectionName].push(record);
         migrationSet.migrations.push(id);
 
@@ -49,7 +51,9 @@ module.exports = async (uri, folder) => {
     }
   };
 
-  for (let migration of migrations)
+  const filteredMigrations = _.sortBy(migrations, item => parseInt(item.id.split('.')[0]));
+
+  for (let migration of filteredMigrations)
     migration.up.bind({
       db: {
         collection: (collectionName) => collectionInitter(collectionName, migration.id)
