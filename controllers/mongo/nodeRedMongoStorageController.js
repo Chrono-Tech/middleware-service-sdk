@@ -64,6 +64,9 @@ let saveFlows = (blob) => {
       })
       )
       .value();
+    
+
+
 
     for (let item of items) {
 
@@ -73,15 +76,7 @@ let saveFlows = (blob) => {
         storageDocument = new NodeRedStorageModel.model({type: 'flows', path: item.path});
 
       if (!_.isEqual(storageDocument.body, item.body)) {
-        let migrations = await NodeRedMigrationModel.model.find({});
-
-        let newMigrationName = _.chain(migrations)
-          .filter(m => m.id)
-          .sortBy(item => parseInt(item.id.split('.')[0]))
-          .last()
-          .get('id', 0).split('.').head().toNumber()
-          .round().add(1)
-          .add(`.${item.path}`).value();
+        let newMigrationName = item.path;
 
         await fs.writeFile(path.join(settings.migrationsDir, `${newMigrationName.replace('.', '-')}.js`), flowTemplate(item, newMigrationName));
       }

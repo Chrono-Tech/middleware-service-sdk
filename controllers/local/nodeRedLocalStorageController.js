@@ -69,15 +69,12 @@ let saveFlows = (blob) => {
       }
 
       if (!_.isEqual(storageDocument.body, item.body)) {
-        let newMigrationName = _.chain(flows.migrations)
-          .sortBy(item => parseInt(item.split('.')[0]))
-          .last()
-          .defaults(0)
-          .split('.').head().toNumber()
-          .round().add(1)
-          .add(`.${item.path}`).value();
+        let newMigrationName = item.path;
 
-        await fs.writeFile(path.join(settings.migrationsDir, `${newMigrationName.replace('.', '-')}.js`), flowTemplate(item, newMigrationName));
+        await fs.writeFile(
+          path.join(settings.migrationsDir, `${newMigrationName.replace('.', '-')}.js`), 
+          flowTemplate(item, newMigrationName)
+        );
       }
 
       storageDocument.body = item.body;
