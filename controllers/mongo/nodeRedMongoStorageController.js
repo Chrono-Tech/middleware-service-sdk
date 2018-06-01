@@ -77,6 +77,18 @@ let saveFlows = (blob) => {
 
       if (!_.isEqual(storageDocument.body, item.body)) {
         let newMigrationName = item.path;
+        if (!settings.stage) {
+          const migrations = await NodeRedMigrationModel.model.find({});          
+          
+          newMigrationName = _.chain(migrations)
+            .filter(m => m.id)
+            .sortBy(item => parseInt(item.id.split('.')[0]))
+            .last()
+            .get('id', 0).split('.').head().toNumber()
+            .map(val => val || 0)
+            .round().add(1)
+            .add(`.${item.path}`).value();
+        }
 
         await fs.writeFile(path.join(settings.migrationsDir, `${newMigrationName.replace('.', '-')}.js`), flowTemplate(item, newMigrationName));
       }
@@ -146,7 +158,9 @@ let sortDocumentsIntoPaths = (documents) => {
 
 const mongodb = {
   init: (globalSettings) => {
+    
     settings = globalSettings;
+    
     return when.resolve();
 
   }, //thumb function
