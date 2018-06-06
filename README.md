@@ -91,6 +91,7 @@ MONGO_URI=mongodb://localhost:27017/data
 REST_PORT=8081
 NODERED_MONGO_URI=mongodb://localhost:27018/data
 RABBIT_URI=amqp://localhost:5672
+STAGE=true
 
 ```
 
@@ -102,6 +103,7 @@ The options are presented below:
 | REST_PORT   | rest plugin port
 | NODERED_MONGO_URI   | the URI string for mongo collection for keeping node-red users and flows (optional, if omitted - then default MONGO_URI will be used)
 | RABBIT_URI  | rabbitmq URI connection string
+| STAGE | if true: save migrations in only one file on flaw, if false: save migrations in iteration files
 
 License
 ----
