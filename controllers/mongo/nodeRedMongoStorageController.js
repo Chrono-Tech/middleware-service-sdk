@@ -66,7 +66,7 @@ let saveFlows = (blob) => {
       .value();
     
 
-
+    const isMigrationWithNumber = m => _.chain(m.id.split('.')[0]).toNumber() > 0;
 
     for (let item of items) {
 
@@ -77,15 +77,15 @@ let saveFlows = (blob) => {
 
       if (!_.isEqual(storageDocument.body, item.body)) {
         let newMigrationName = item.path;
-        if (!settings.stage) {
+        if (!settings.migrationsInOneFile) {
           const migrations = await NodeRedMigrationModel.model.find({});          
           
           newMigrationName = _.chain(migrations)
-            .filter(m => m.id)
+            .filter(m => m.id && isMigrationWithNumber(m))
             .sortBy(item => parseInt(item.id.split('.')[0]))
             .last()
             .get('id', 0).split('.').head().toNumber()
-            .map(val => val || 0)
+            .thru(val => val || 0)
             .round().add(1)
             .add(`.${item.path}`).value();
         }
