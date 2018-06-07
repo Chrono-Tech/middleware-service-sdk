@@ -37,6 +37,7 @@ let config = {
       collectionPrefix: ''
     },
     useLocalStorage: false,
+    migrationsInOneFile: false,
     migrationsDir: path.join(__dirname, '../migrations'),
     adminAuth: require('../controllers/nodeRedAuthController'),
     storageModule: require('../controllers/nodeRedStorageController'),

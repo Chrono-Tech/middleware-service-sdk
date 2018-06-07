@@ -16,7 +16,11 @@ module.exports = {
   type: 'credentials',
   init: (globalSettings)=>{
     settings = globalSettings;
-    flows = fs.readJsonSync('flows.json');
+    flows = fs.readJsonSync('flows.json', {throws: false});
+    if (!flows) {
+      flows = {noderedusers: [], noderedstorages: [], migrations: []};
+      fs.writeFileSync('flows.json', JSON.stringify(flows));
+    }
     return when.resolve();
   },
   users: function (username) {
