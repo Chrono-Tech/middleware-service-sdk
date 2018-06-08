@@ -103,21 +103,17 @@ const migrator = require('middleware_service.sdk').migrator;
  
  What variables you need save in config.nodered
  
- ```
-     mongo: {
-      uri: <String>,
-      collectionPrefix: <String>,
-    },
-    autoSyncMigrations: <Boolean>,
-    customNodesDir: [<String>],
-    migrationsInOneFile: <Boolean>,
-    useLocalStorage: <Boolean>,
-    
-    migrationsDir: <String>,
-    functionGlobalContext: {
-      <Context for your functions>
-    }
- ```
+| path | type | description |
+| ----- | ------ | ------|
+| mongo.uri | String | url for connection to mongo, where save migrations, users and flows
+| mongo.collectionPrefix | String | prefix to collection in mongo, where save migrations, users and flows| 
+| autoSyncMigrations | Boolean | auto synchronization migrations in storage or not
+| customNodesDir | [String] | Array with paths to dir with nodes, that use in this sdk
+| migrationsInOneFile | Boolean | save migrations and update in one file for one flow, or save update migrations in different files 
+| useLocalStorage | Boolean | use mongo or local file to save migrations, nodes, and users
+| functionGlobalContext | Object | context with variables, that shares to your functions in nodered
+
+ 
 
 Below is the expamle configuration:
 
