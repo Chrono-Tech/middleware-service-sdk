@@ -4,10 +4,16 @@ Middleware service for which expose rest api
 
 ### Installation
 
-This module is a part of middleware services. You can install it in 2 ways:
-
-1) through core middleware installer  [middleware installer](https://www.npmjs.com/package/chronobank-middleware)
-2) by hands: just clone the repo, do 'npm install', set your .env - and you are ready to go
+This module is a part of middleware services. It's library and use it only through node_modules
+Write in package.json:
+``` 
+  "dependencies": {
+    "middleware_service.sdk": "github:chronobank/middleware-service-sdk"
+```
+then 
+```
+npm i
+```
 
 #### About
 
@@ -81,27 +87,72 @@ Step by step:
 
 10) We can deploy our flow 
 
-##### сonfigure your .env
+##### сonfigure this module
 
-To apply your configuration, create a .env file in root folder of repo (in case it's not present already).
+To apply your configuration, send this variables to redInitter in config.nodered
+```
+const config = require('config');
+const redInitter = require('middleware_service.sdk').init;
+const migrator = require('middleware_service.sdk').migrator;
+
+ if (config.nodered.autoSyncMigrations)
+   await migrator.run(config.nodered.mongo.uri, path.join(__dirname, 'migrations'));
+
+ redInitter(config);
+ ```
+ 
+ What variables you need save in config.nodered
+ 
+ ```
+     mongo: {
+      uri: <String>,
+      collectionPrefix: <String>,
+    },
+    autoSyncMigrations: <Boolean>,
+    customNodesDir: [<String>],
+    migrationsInOneFile: <Boolean>,
+    useLocalStorage: <Boolean>,
+    
+    migrationsDir: <String>,
+    functionGlobalContext: {
+      <Context for your functions>
+    }
+ ```
+
 Below is the expamle configuration:
 
 ```
-MONGO_URI=mongodb://localhost:27017/data
-REST_PORT=8081
-NODERED_MONGO_URI=mongodb://localhost:27018/data
-RABBIT_URI=amqp://localhost:5672
+    mongo: {
+      uri: process.env.NODERED_MONGO_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/data',
+      collectionPrefix: process.env.NODE_RED_MONGO_COLLECTION_PREFIX || '',
+    },
+    autoSyncMigrations: process.env.NODERED_AUTO_SYNC_MIGRATIONS || true,
+    customNodesDir: [path.join(__dirname, '../')],
+    migrationsInOneFile: false,
+    useLocalStorage: false,
+    
+    migrationsDir: path.join(__dirname, '../migrations'),
+    functionGlobalContext: {
+      factories: {
+        sm: require('../factories/sc/smartContractsFactory')
+      },
+      'truffle-contract': require('truffle-contract'),
+      connections: {
+        primary: mongoose
+      },
+      settings: {
+        mongo: {
+          accountPrefix: process.env.MONGO_ACCOUNTS_COLLECTION_PREFIX || process.env.MONGO_COLLECTION_PREFIX || 'eth',
+          collectionPrefix: process.env.MONGO_DATA_COLLECTION_PREFIX || process.env.MONGO_COLLECTION_PREFIX || 'eth'
+        },
+        rabbit: {
+          url: process.env.RABBIT_URI || 'amqp://localhost:5672',
+          serviceName: process.env.RABBIT_SERVICE_NAME || 'app_eth'
+        }
+      }
+    }
 
 ```
-
-The options are presented below:
-
-| name | description|
-| ------ | ------ |
-| MONGO_URI   | the URI string for mongo connection
-| REST_PORT   | rest plugin port
-| NODERED_MONGO_URI   | the URI string for mongo collection for keeping node-red users and flows (optional, if omitted - then default MONGO_URI will be used)
-| RABBIT_URI  | rabbitmq URI connection string
 
 License
 ----
