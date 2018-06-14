@@ -43,7 +43,7 @@ let config = {
     storageModule: require('../controllers/nodeRedStorageController'),
     autoSyncMigrations: true,
     httpServer: true,
-    httpAdminRoot: '/admin',
+    httpAdminRoot: false,
     httpNodeRoot: '/',
     debugMaxLength: 1000,
     nodesDir: path.join(__dirname, '../'),
