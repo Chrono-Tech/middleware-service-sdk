@@ -59,8 +59,11 @@ module.exports = {
     app.use(bodyParser.json());
 
     RED.init(httpServer, config.nodered);
-    app.use(config.nodered.httpAdminRoot, RED.httpAdmin);
-    app.use(config.nodered.httpNodeRoot, RED.httpNode);
+    if (config.nodered.httpAdminRoot)
+      app.use(config.nodered.httpAdminRoot, RED.httpAdmin);
+
+    if (config.nodered.httpNodeRoot)
+      app.use(config.nodered.httpNodeRoot, RED.httpNode);
 
     if (config.nodered.httpServer)
       httpServer.listen(config.rest.port);
