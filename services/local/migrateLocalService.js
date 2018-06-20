@@ -21,7 +21,7 @@ module.exports = async (uri, folder) => {
     })
   );
 
-  const migrationSet = {};
+  const migrationSet = {migrations: [], noderedusers: [], noderedstorages: []};
 
   const collectionInitter = (collectionName, id) => {
     return {
