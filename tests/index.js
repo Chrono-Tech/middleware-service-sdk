@@ -74,5 +74,17 @@ let connection,
                 (err || res.statusCode !== 200) ? done(err || res.statusCode) : done();
             });
         });
+
+        it('get auth right', (done) => {
+            request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer token123'}}, (err, res) => {
+                (err || res.statusCode !== 200) ? done(err || res.statusCode) : done();
+            });
+        });
+
+        it('get auth error', (done) => {
+            request('http://localhost:8081/secret', (err, res) => {
+                (err || res.statusCode !== 401) ? done(err || res.statusCode) : done();
+            });
+        });
     });
 
