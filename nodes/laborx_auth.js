@@ -15,7 +15,13 @@ module.exports = function (RED) {
 
       const ctx =  node.context().global;
 
-      const providerPath = redConfig.configprovider === '0' ? redConfig.providerpath :_.get(ctx.settings, 'laborxProvider') || 'http://localhost:30001';
+      const providerPath = redConfig.configprovider === '0' ? redConfig.providerpath : 
+        _.get(ctx.settings, 'laborx.authProvider') || 'http://localhost:3001';
+
+      if (!_.get(msg, 'req.headers.authorization')) {
+        msg.statusCode = '400';
+        return this.error('Not set authorization headers', msg);
+      }
 
       try {
         let addresses = await request({
@@ -26,14 +32,14 @@ module.exports = function (RED) {
             'Authorization': msg.req.headers.authorization
           }
         });
-        if (!addresses['address']) 
-          throw new Error('not found address from auth response');
+        if (!_.get(addresses, 'address')) 
+          throw new Error('not found addresses from auth response ' + addresses);
         
         msg.addresses = addresses;
-
         node.send(msg);
       } catch (err) {
-        this.error(JSON.stringify(err), msg);
+        msg.statusCode = '401';
+        this.error(err, msg);
       }
     });
   }

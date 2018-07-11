@@ -68,6 +68,9 @@ let config = {
         rabbit: {
           url: 'amqp://localhost:5672',
           serviceName: 'app_sdk'
+        },
+        laborx: {
+          authProvider: 'http://localhost:3001'
         }
       }
     },

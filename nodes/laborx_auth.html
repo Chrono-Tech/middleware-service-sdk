@@ -60,10 +60,11 @@
         </dl>
         <h3>Config</h3>
         <p>Set provider path [laborx backend auth] may in config or manual</p>
-        <p>Config path: nodered.functionGlobalContext.settings.laborxProvider</p>
+        <p>Config path: nodered.functionGlobalContext.settings.laborx.authProvider</p>
+        <p>Default value: http://localhost:3001 </p>
         <h3>Details</h3>
         <p>Get token from HTTP Auth Header [Authorization: Bearer <token>].</p>
-        <p>Send authoriation header to address uri/signin/signature/addresses </p>
+        <p>Send authoriation header to address $authProvider/signin/signature/addresses </p>
         <p>If get addresses from response, attach to msg.addresses.</p>
         <p>If not - generate error.</p>
       <div class="form-row">

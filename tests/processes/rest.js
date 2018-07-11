@@ -6,14 +6,16 @@
 
 const config = require('../config/index'),
   path = require('path'),
-  migrator = require('../index').migrator,
+  migrator = require('../../index').migrator,
   _ = require('lodash'),
-  redInitter = require('../index').init;
+  redInitter = require('../../index').init;
 
 const init = async () => {
 
   if (config.nodered.autoSyncMigrations)
-    await migrator.run(config.nodered.mongo.uri, path.join(__dirname, 'migrations'));
+    await migrator.run(
+      config.nodered.mongo.uri, 
+      path.join(__dirname, '../', 'migrations'), null, true);
 
   redInitter(config);
 };

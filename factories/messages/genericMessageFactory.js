@@ -6,5 +6,6 @@
 module.exports = {
   success: {code: 1, message: 'ok'},
   fail: {code: 0, message: 'fail'},
+  failAuth: {code: 401, message: 'fail authentication'},
   notEnoughArgs: {code: 2, message: 'wrong or no arguments have been passed'}
 };

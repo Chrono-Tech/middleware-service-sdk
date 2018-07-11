@@ -34,9 +34,8 @@ let simpleSave = (type, path, blob) => {
 
     let storageDocument = _.chain(flows).get('noderedstorages').find({type: type, path: path}).value();
 
-    if (!storageDocument || !storageDocument.body) {
+    if (!storageDocument || !storageDocument.body) 
       storageDocument = {type: type, path: path};
-    }
     flows.noderedstorages.push(storageDocument);
 
     storageDocument.body = JSON.stringify(blob);
@@ -53,10 +52,9 @@ let saveFlows = (blob) => {
       .groupBy('z')
       .toPairs()
       .map(pair => ({
-          path: pair[0] === 'undefined' ? 'tabs' : pair[0],
-          body: pair[1]
-        })
-      )
+        path: pair[0] === 'undefined' ? 'tabs' : pair[0],
+        body: pair[1]
+      }))
       .value();
 
     const isMigrationWithNumber = m => _.chain(m.split('.')[0]).toNumber() > 0;
@@ -73,13 +71,13 @@ let saveFlows = (blob) => {
 
       if (!_.isEqual(storageDocument.body, item.body)) {
         let newMigrationName = settings.migrationsInOneFile ? item.path : _.chain(flows.migrations)
-            .filter(isMigrationWithNumber)
-            .sortBy(item => parseInt(item.split('.')[0]))
-            .last()
-            .split('.').head().toNumber()
-            .thru(val => val || 0)
-            .round().add(1)
-            .add(`.${item.path}`).value();
+          .filter(isMigrationWithNumber)
+          .sortBy(item => parseInt(item.split('.')[0]))
+          .last()
+          .split('.').head().toNumber()
+          .thru(val => val || 0)
+          .round().add(1)
+          .add(`.${item.path}`).value();
         await fs.writeFile(
           path.join(settings.migrationsDir, `${newMigrationName.replace('.', '-')}.js`), 
           flowTemplate(item, newMigrationName)
