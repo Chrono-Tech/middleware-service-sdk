@@ -22,6 +22,10 @@ install:
 
 before_script:
     - cd $TRAVIS_BUILD_DIR/tests && pm2 start runNode.js
+    - cd $TRAVIS_BUILD_DIR && git clone -b develop https://github.com/chronobank/LaborX-backend
+    - cd $TRAVIS_BUILD_DIR/LaborX-backend && npm i
+    - cp $TRAVIS_BUILD_DIR/tests/config/laborx.json $TRAVIS_BUILD_DIR/LaborX-backend/config/default.json
+    - cd $TRAVIS_BUILD_DIR/LaborX-backend && pm2 start ecosystem.config.js
 
 script:
   - sleep 60 && npm test -- --coverage
