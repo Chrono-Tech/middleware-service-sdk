@@ -12,9 +12,9 @@ app.post('/signin/signature/addresses', function(req, res) {
   if (!req.headers.authorization) res.status(400).send('missing authorization header');
   
   const params = req.headers.authorization.split(' ');
-  if (params[0] === 'Bearer' && params[1] === config.dev.token) {
+  if (params[0] === 'Signature' && params[1] === config.dev.signature) {
     res.status(200).send(JSON.stringify({
-      address: config.dev.address,
+      'ethereum-public-key': config.dev['ethereum-public-key'],
       'nem-address': config.dev['nem-address']
     }));
     return;

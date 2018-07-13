@@ -14,9 +14,9 @@ module.exports = _.merge(config, {
       migrationsDir: path.join(__dirname, '../migrations'),
     },
     dev: {
-      token: 'token1234',
+      signature: '',
       'nem-address': 'MDFEWRWERWERWREEW',
-      address: 'af342432',
-      proxyPort: 3001
+      'ethereum-public-key': 'af342432',
+      'user': 11
     }
 });

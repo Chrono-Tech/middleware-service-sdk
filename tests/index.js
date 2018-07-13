@@ -64,7 +64,22 @@ describe('testing API node-red', function () {
       if (err || res.statusCode !== 200) 
         done(err || res.statusCode);
       expect(JSON.parse(res.body), {
-        address: config.dev.address, 
+        'ethereum-public-key': config.dev['ethereum-public-key'], 
+        'nem-address': config.dev['nem-address']
+      });
+      done();
+    });
+  });
+
+
+  it('get auth right from db', (done) => {
+    const profileModel = require('./models/profileModel');
+    request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
+      config.dev.token}}, (err, res) => {
+      if (err || res.statusCode !== 200) 
+        done(err || res.statusCode);
+      expect(JSON.parse(res.body), {
+        'ethereum-public-key': config.dev['ethereum-public-key'], 
         'nem-address': config.dev['nem-address']
       });
       done();

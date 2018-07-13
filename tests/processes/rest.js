@@ -5,12 +5,24 @@
 */
 
 const config = require('../config/index'),
+  mongoose = require('mongoose'),
+  Promise = require('bluebird'),
   path = require('path'),
   migrator = require('../../index').migrator,
   _ = require('lodash'),
   redInitter = require('../../index').init;
 
 const init = async () => {
+
+
+  mongoose.connect(config.nodered.mongo.uri, {useMongoClient: true});
+  require('require-all')({
+    dirname: path.join(__dirname, '/models'),
+    filter: /(.+Model)\.js$/,
+    resolve: Model => {
+      return Model.init(config.nodered.mongo);
+    }
+  });
 
   if (config.nodered.autoSyncMigrations)
     await migrator.run(
@@ -19,5 +31,4 @@ const init = async () => {
 
   redInitter(config);
 };
-
 module.exports = init();
