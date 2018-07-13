@@ -11,13 +11,12 @@
  */
 
 const mongoose = require('mongoose'),
-  config = require('./config');
+  config = require('../config');
 
 
 const Profile = new mongoose.Schema({
   token: {type: String, required: true, index: true},
-  addresses: {type: Mixed}
+  addresses: {type: mongoose.Schema.Types.Mixed}
 });
 
-module.exports = () =>
-  mongoose.model(`${config.mongo.accounts.collectionPrefix}Profile`, Profile);
+module.exports = mongoose.model(`${config.mongo.accounts.collectionPrefix}Profile`, Profile);

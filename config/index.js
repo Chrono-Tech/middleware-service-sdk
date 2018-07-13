@@ -25,7 +25,8 @@ let config = {
       uri: 'mongodb://localhost:27017/data',
       collectionPrefix: 'sdk',
       useData: 1
-    }
+    },
+    profileModelName: 'profileModel'
   },
   rest: {
     domain: 'localhost',
@@ -70,7 +71,8 @@ let config = {
           serviceName: 'app_sdk'
         },
         laborx: {
-          authProvider: 'http://localhost:3001'
+          authProvider: 'http://localhost:3001',
+          profileModel: 'sdkProfile'
         }
       }
     },

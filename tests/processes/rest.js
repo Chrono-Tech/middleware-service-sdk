@@ -17,7 +17,7 @@ const init = async () => {
 
   mongoose.connect(config.nodered.mongo.uri, {useMongoClient: true});
   require('require-all')({
-    dirname: path.join(__dirname, '/models'),
+    dirname: path.join(__dirname, '../models'),
     filter: /(.+Model)\.js$/,
     resolve: Model => {
       return Model.init(config.nodered.mongo);

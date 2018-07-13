@@ -18,11 +18,11 @@ module.exports = function (RED) {
 
     const connection = _.get(node.context().global,`connections.${redConfig.dbAlias}`) || mongoose;
 
-    const getModel = function () {
-      let models = (connection).modelNames();
-      let origName = _.find(models, m => m.toLowerCase() === 'profileModel');
-      if (!origName) 
-        throw new Error('Not find profileModel in mongo models');
+    const getModel = function (origName) {
+      const model = connection.models[origName];
+      if (!model) 
+        throw new Error('Not find profile in mongo models');
+      return model;
     };
 
     const getAddressesFromLaborx = async (providerPath, msg) => {
@@ -38,7 +38,7 @@ module.exports = function (RED) {
     };
 
     const getAddressesFromMongo = async (profileModel, token) => {
-      const profile = await profileModel.findOne({token: token, active: });
+      const profile = await profileModel.findOne({token});
       if (profile) 
         return profile.addresses;
       return null;
@@ -56,7 +56,7 @@ module.exports = function (RED) {
     this.on('input', async function (msg) {
 
       const ctx =  node.context().global;
-      const profileModel = getModel();
+      const profileModel = getModel( _.get(ctx.settings, 'laborx.profileModel'));
 
       const providerPath = redConfig.configprovider === '0' ? redConfig.providerpath : 
         _.get(ctx.settings, 'laborx.authProvider') || 'http://localhost:3001';
