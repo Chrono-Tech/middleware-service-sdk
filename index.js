@@ -35,9 +35,10 @@ module.exports = {
 
     config = _.merge(defaultConfig, config);
 
-    mongoose.connect(config.nodered.mongo.uri, {useMongoClient: true});
 
-    if (!config.nodered.useLocalStorage)
+    if (!config.nodered.useLocalStorage) {
+      mongoose.connect(config.nodered.mongo.uri, {useMongoClient: true});
+
       require('require-all')({
         dirname: path.join(__dirname, '/models'),
         filter: /(.+Model)\.js$/,
@@ -45,13 +46,13 @@ module.exports = {
           return Model.init(config.nodered.mongo);
         }
       });
+    }
 
     config.nodered.nodesDir = _.union(
       _.isString(config.nodered.customNodesDir) ? [config.nodered.customNodesDir] : config.nodered.customNodesDir,
       _.isString(config.nodered.nodesDir) ? [config.nodered.nodesDir] : config.nodered.nodesDir);
 
     config.nodered.adminAuth.init(config.nodered);
-
     let app = express();
     let httpServer = http.createServer(app);
     app.use(cors());
