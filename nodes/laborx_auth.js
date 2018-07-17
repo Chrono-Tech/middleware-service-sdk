@@ -58,13 +58,14 @@ module.exports = function (RED) {
     this.on('input', async function (msg) {
       let models = (connection).modelNames();
       let origName = _.find(models, m => m.toLowerCase() === tableName.toLowerCase());
+      console.log(tableName, origName);
       if (!origName) 
-        return node.error('not found profileModel in connections', 'not right profileModel');
+        return node.error('not found profileModel in connections');
 
       const profileModel = connection.models[origName];
       if (!isAuth(msg)) {
         msg.statusCode = '400';
-        return node.error('Not set authorization headers', msg);
+        return node.error('Not set authorization headers');
       }
 
       const authorization = _.get(msg, 'req.headers.authorization');
@@ -82,7 +83,7 @@ module.exports = function (RED) {
           await saveAddressesToMongo(profileModel, params[1], addresses);
       } catch (err) {
         msg.statusCode = '401';
-        return node.error(err, msg);
+        return node.error(err);
       }
 
       node.send(msg);
