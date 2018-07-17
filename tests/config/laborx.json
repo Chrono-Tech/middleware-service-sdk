@@ -1,0 +1,32 @@
+{
+    "keystone": {
+      "cookieSecret": "place-your-cookie-secret-here"
+    },
+    "storage": {
+      "files": "/home/files",
+      "url": "mongodb://localhost:27017/profile-backend"
+    },
+    "cloudinary": {
+      "url": "https://cloudinary.com/"
+    },
+    "self": {
+      "url": "http://localhost:3001"
+    },
+    "rabbit": {
+      "url": "amqp://guest:guest@localhost:5672",
+      "reconnectTimeout" : 1000
+    },
+    "mail": {
+      "from": "place-your-from@address.here",
+      "baseURL": "http://localhost:8080",
+      "transport": {
+        "host": "smtp.mail.ru",
+        "port": 465,
+        "secure": true,
+        "auth": {
+          "user": "place-your-from@address.here",
+          "pass": "place-your-password-here"
+        }
+      }
+    }
+  }

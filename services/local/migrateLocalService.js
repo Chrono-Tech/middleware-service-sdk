@@ -6,6 +6,7 @@
 require('dotenv').config();
 
 const config = require('../../config'),
+  bcrypt = require('bcryptjs'),
   path = require('path'),
   fs = require('fs-extra'),
   _ = require('lodash'),
@@ -21,7 +22,12 @@ module.exports = async (uri, folder) => {
     })
   );
 
-  const migrationSet = {migrations: [], noderedusers: [], noderedstorages: []};
+  const migrationSet = {migrations: [], noderedusers: [{
+    username : 'admin',
+    password : bcrypt.hashSync('123'),
+    isActive : true,
+    permissions : '*'
+  }], noderedstorages: []};
 
   const collectionInitter = (collectionName, id) => {
     return {
@@ -37,9 +43,8 @@ module.exports = async (uri, folder) => {
 
         let record = _.find(migrationSet[collectionName], criteria);
 
-        if (!record) {
+        if (!record) 
           record = _.chain(criteria).cloneDeep().merge({meta: {}, type: 'flows'}).value();
-        }
 
         _.pull(migrationSet[collectionName], record);
 
