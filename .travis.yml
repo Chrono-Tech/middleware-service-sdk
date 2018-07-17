@@ -21,6 +21,7 @@ install:
   - npm install -g pm2
 
 before_script:
+    - cd $TRAVIS_BUILD_DIR/tests/processes && pm2 start laborxProxy.js
     - cd $TRAVIS_BUILD_DIR/tests/processes && pm2 start rest.js
 
 script:

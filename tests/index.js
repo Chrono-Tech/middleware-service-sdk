@@ -60,9 +60,9 @@ describe('testing API node-red', function () {
 
   it('get auth right', (done) => {
     request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
-      config.dev.token}}, (err, res) => {
+      config.dev.signature}}, (err, res) => {
       if (err || res.statusCode !== 200) 
-        done(err || res.statusCode);
+        return done(err || res.statusCode);
       expect(JSON.parse(res.body), {
         'ethereum-public-key': config.dev['ethereum-public-key'], 
         'nem-address': config.dev['nem-address']
@@ -75,9 +75,9 @@ describe('testing API node-red', function () {
   it('get auth right from db', (done) => {
     const profileModel = require('./models/profileModel');
     request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
-      config.dev.token}}, (err, res) => {
+      config.dev.signature}}, (err, res) => {
       if (err || res.statusCode !== 200) 
-        done(err || res.statusCode);
+        return done(err || res.statusCode);
       expect(JSON.parse(res.body), {
         'ethereum-public-key': config.dev['ethereum-public-key'], 
         'nem-address': config.dev['nem-address']
@@ -93,7 +93,7 @@ describe('testing API node-red', function () {
   });
 
   it('get auth error 401', (done) => {
-    request('http://localhost:8081/secret',{'headers': {Authorization: 'Bearer token123'}}, 
+    request('http://localhost:8081/secret',{'headers': {Authorization: 'Bearer token1243'}}, 
       (err, res) => {
         (err || res.statusCode !== 401) ? done(err || res.statusCode) : done();
       });

@@ -9,13 +9,17 @@ const express = require('express'),
 
 // respond with "hello world" when a GET request is made to the homepage
 app.post('/signin/signature/addresses', function(req, res) {
+  console.log('get token');
   if (!req.headers.authorization) res.status(400).send('missing authorization header');
   
   const params = req.headers.authorization.split(' ');
-  if (params[0] === 'Signature' && params[1] === config.dev.signature) {
+  console.log('token = ' + params[0] + ' value=' + params[1] + '?=' + config.dev.signature) ;
+  if (params[0] === 'Bearer' && params[1] === config.dev.signature) {
     res.status(200).send(JSON.stringify({
-      'ethereum-public-key': config.dev['ethereum-public-key'],
-      'nem-address': config.dev['nem-address']
+        'addresses': {
+          'ethereum-public-key': config.dev['ethereum-public-key'],
+          'nem-address': config.dev['nem-address']
+        }
     }));
     return;
   }
