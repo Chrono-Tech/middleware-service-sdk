@@ -7,6 +7,7 @@
     "bcoin": "^1.0.0-beta.15",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.1",
+    "bluebird": "^3.5.1",
     "bunyan": "^1.8.12",
     "cors": "^2.8.4",
     "dotenv": "^4.0.0",
