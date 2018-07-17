@@ -1,0 +1,93 @@
+<!--
+ Copyright 2017–2018, LaborX PTY
+ Licensed under the AGPL Version 3 license.
+ -->
+
+ <script type="text/javascript">
+    RED.nodes.registerType("laborx_auth", {
+      category: "auth",
+      color: "#E2D96E",
+      defaults: {
+        method: {value: ""},
+        params: [],
+        name: {value: 'laborx_auth'},
+        configprovider: {value: '1'},
+        providerpath: {value: "http://localhost:3001"}
+      },
+      inputs: 1,
+      outputs: 1,
+      icon: "function.png",
+      label: function () {
+        return this.name;
+      },
+      oneditprepare: function () {
+        let resizeRule = rule => {
+          let newWidth = rule.width();
+          rule.find('.red-ui-typedInput').typedInput("width", (newWidth - 15) / 2);
+        };
+  
+  
+  
+        $("#node-input-configprovider").change(function (e) {
+          let val = $(this).val();
+  
+          if (val === '1') {
+            $("#node-input-providerpath").hide();
+            $('label[for="node-input-providerpath"]').hide();
+  
+          } else {
+            $("#node-input-providerpath").show();
+            $('label[for="node-input-providerpath"]').show();
+          }
+  
+        });
+
+      }
+    });
+  </script>
+  
+  <script type="text/x-red" data-template-name="laborx_auth">
+        <p>Call Laborx auth</p>
+        <h3>Outputs</h3>
+        <dl class="message-properties">
+            <dt>msg.addresses <span class="property-type">string</span></dt>
+            <dd>addresses for selected user {
+                    bitcoin-address: value,
+                    waves-address: value,
+                    nem-address: value,
+                    eth-address: value    
+            }</dd>
+        </dl>
+        <h3>Config</h3>
+        <p>Set provider path [laborx backend auth] may in config or manual</p>
+        <p>Config path: nodered.functionGlobalContext.settings.laborx.authProvider</p>
+        <p>Default value: http://localhost:3001 </p>
+        <h3>Details</h3>
+        <p>Get token from HTTP Auth Header [Authorization: Bearer <token>].</p>
+        <p>Send authoriation header to address $authProvider/signin/signature/addresses </p>
+        <p>If get addresses from response, attach to msg.addresses.</p>
+        <p>If not - generate error.</p>
+      <div class="form-row">
+          <label for="node-input-name"><i class="icon-tag"></i>Name</label>
+          <input type="text" id="node-input-name" placeholder="Name">
+      </div>
+  
+       <div class="form-row">
+          <label>Config</label>
+          <select id="node-input-configprovider" style="width:200px;">
+              <option value="1">from config</option>
+              <option value="0">manual</option>
+          </select>
+      </div>
+  
+      <div class="form-row">
+          <label for="node-input-providerpath"><i class="icon-tag"></i>provider path</label>
+          <input type="text" id="node-input-providerpath" placeholder="laborx provider uri">
+      </div>  
+  </script>
+  
+  <script type="text/x-red" data-help-name="laborx_auth">
+      <p> Laborx Auth for node</p>
+  
+  </script>
+  
