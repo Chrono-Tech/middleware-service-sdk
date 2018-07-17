@@ -8,6 +8,7 @@ const NodeRedStorageModel = require('../../models/nodeRedStorageModel'),
   when = require('when'),
   _ = require('lodash'),
   fs = require('fs-extra'),
+  Promise = require('bluebird'),
   flowTemplate = require('../../migrations/templates/flowTemplate'),
   path = require('path');
 
@@ -64,9 +65,36 @@ let saveFlows = (blob) => {
       })
       )
       .value();
+
+    const getDeleteTabIds = (oldItems, newItems) => {
+      const oldTabs = _.chain(oldItems)
+        .get('body').map('id').value();
+      const newTabs = _.chain(newItems)
+        .get('body').map('id').value();
+      return _.difference(oldTabs, newTabs);
+    };
+
+    const getFileName = (migrationName) => {
+      return path.join(settings.migrationsDir, `${migrationName.replace('.', '-')}.js`);
+    };
+
+    const deleteTabs = async (deleteTabIds) => {
+      await NodeRedStorageModel.model.remove({'path': [deleteTabIds]});
+      if (settings.migrationsInOneFile) 
+        await Promise.map(deleteTabIds, async (deleteTabId) => {
+          await fs.remove(getFileName(deleteTabId));
+        });
+    };
     
 
     const isMigrationWithNumber = m => _.chain(m.id.split('.')[0]).toNumber() > 0;
+
+
+    const deleteTabIds = getDeleteTabIds(
+      await NodeRedStorageModel.model.findOne({path: 'tabs'}),
+      _.find(items, {'path': 'tabs'})
+    );
+    await deleteTabs(deleteTabIds);
 
     for (let item of items) {
 
@@ -90,8 +118,10 @@ let saveFlows = (blob) => {
             .add(`.${item.path}`).value();
         }
 
-        await fs.writeFile(path.join(settings.migrationsDir, `${newMigrationName.replace('.', '-')}.js`), flowTemplate(item, newMigrationName));
+        await fs.writeFile(getFileName(newMigrationName), 
+          flowTemplate(item, newMigrationName));
       }
+
 
       storageDocument.body = item.body;
       await NodeRedStorageModel.model.update({_id: storageDocument._id}, storageDocument, {
