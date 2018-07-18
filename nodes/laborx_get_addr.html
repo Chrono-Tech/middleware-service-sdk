@@ -1,0 +1,56 @@
+<!--
+ Copyright 2017–2018, LaborX PTY
+ Licensed under the AGPL Version 3 license.
+ -->
+
+ <script type="text/javascript">
+    RED.nodes.registerType("laborx_get_addr", {
+      category: "auth",
+      color: "#E2D96E",
+      defaults: {
+        addr: {value: ''},
+        name: {value: 'laborx_get_addr'},
+      },
+      inputs: 1,
+      outputs: 1,
+      icon: "function.png",
+      label: function () {
+        return this.name;
+      },
+      oneditprepare: function () {
+        let resizeRule = rule => {
+          let newWidth = rule.width();
+          rule.find('.red-ui-typedInput').typedInput("width", (newWidth - 15) / 2);
+        };
+
+      }
+    });
+  </script>
+  
+  <script type="text/x-red" data-template-name="laborx_get_addr">
+        <p>Get addr from laborx message</p>
+        <h3>Outputs</h3>
+        <dl class="message-properties">
+            <dt>msg.payload.address <span class="property-type">string</span></dt>
+            <dd>address for name blockchain from msg.payload</dd>
+        </dl>
+        <h3>Details</h3>
+        <p>Json parse and get addr with name = $name from msg.payload.</p>
+        <p>If get addresses from response, attach to msg.payload.address.</p>
+        <p>If not - amqpMessage.close().</p>
+      <div class="form-row">
+          <label for="node-input-name"><i class="icon-tag"></i>Name</label>
+          <input type="text" id="node-input-name" placeholder="Name">
+      </div>
+  
+      <div class="form-row">
+          <label for="node-input-addr"><i class="icon-tag"></i>name address parameter</label>
+          <input type="text" id="node-input-addr" placeholder="name address in amqpMessage">
+      </div>  
+  </script>
+  
+  <script type="text/x-red" data-help-name="laborx_get_addr">
+      <p> Laborx Auth get address</p>
+  
+  </script>
+  
