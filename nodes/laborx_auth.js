@@ -75,7 +75,7 @@ module.exports = function (RED) {
 
       if (!isAuth(msg)) {
         msg.statusCode = '400';
-        return node.error('Not set authorization headers', msg);
+        return node.error('Not set authorization headers');
       }
 
       const authorization = _.get(msg, 'req.headers.authorization');
@@ -93,7 +93,7 @@ module.exports = function (RED) {
           await saveAddressesToMongo(profileModel, params[1], addresses);
       } catch (err) {
         msg.statusCode = '401';
-        return node.error(err, msg);
+        return node.error(err);
       }
 
       node.send(msg);
