@@ -38,6 +38,9 @@ const saveAddressesToMongo = async (profileModel, token, addresses) => {
 
 const isAuth = (msg) => { return _.get(msg.req, 'headers.authorization') !== null; };
 
+const isToken = (nameToken) => { 
+  return nameToken === 'Bearer';
+};
 
 module.exports = function (RED) {
   function ExtractCall (redConfig) {
@@ -45,23 +48,31 @@ module.exports = function (RED) {
     let node = this;
 
     const ctx =  node.context().global;
-    const dbAlias = _.get(ctx.settings, 'laborx.dbAlias') || 'accounts';
-    const tableName = _.get(ctx.settings, 'laborx.profileModel') || 'ctxProfile';
+    const useCache = _.get(ctx.settings, 'laborx.useCache') || true;
+
+    let dbAlias, tableName, connection;
+    if (useCache) {
+      dbAlias = _.get(ctx.settings, 'laborx.dbAlias') || 'accounts';
+      tableName = _.get(ctx.settings, 'laborx.profileModel') || 'ctxProfile';
+      connection = _.get(
+        ctx,
+        `connections.primary.${dbAlias}`
+      ) || mongoose;
+    }
+    
     const providerPath = redConfig.configprovider === '0' ? redConfig.providerpath : 
       _.get(ctx.settings, 'laborx.authProvider') || 'http://localhost:3001';
-    const connection = _.get(
-      ctx,
-      `connections.primary.${dbAlias}`
-    ) || mongoose;
-
 
     this.on('input', async function (msg) {
-      let models = (connection).modelNames();
-      let origName = _.find(models, m => m.toLowerCase() === tableName.toLowerCase());
-      if (!origName) 
-        return node.error('not found profileModel in connections', 'not right profileModel');
+      let models, origName, profileModel;
+      if (useCache) {
+        models = (connection).modelNames();
+        origName = _.find(models, m => m.toLowerCase() === tableName.toLowerCase());
+        if (!origName) 
+          return node.error('not found profileModel in connections', 'not right profileModel');
+        profileModel = connection.models[origName];
+      }
 
-      const profileModel = connection.models[origName];
       if (!isAuth(msg)) {
         msg.statusCode = '400';
         return node.error('Not set authorization headers', msg);
@@ -69,7 +80,7 @@ module.exports = function (RED) {
 
       const authorization = _.get(msg, 'req.headers.authorization');
       const params = authorization.split(' ');
-      if (params[0] === 'Bearer') {
+      if (useCache && isToken(params[0])) {
         msg.addresses = await getAddressesFromMongo(profileModel, params[1]);
         if (msg.addresses) 
           return node.send(msg);
@@ -78,7 +89,7 @@ module.exports = function (RED) {
       try {
         let addresses = await getAddressesFromLaborx(providerPath, msg);
         msg.addresses = addresses;
-        if (params[0] === 'Bearer') 
+        if (useCache && isToken(params[0])) 
           await saveAddressesToMongo(profileModel, params[1], addresses);
       } catch (err) {
         msg.statusCode = '401';
