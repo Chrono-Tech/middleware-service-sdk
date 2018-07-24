@@ -86,7 +86,8 @@ module.exports = function (RED) {
         };
 
         const topic = node.topic || msg.fields.routingKey;
-        if (topic === node.topic) 
+        var regex = new RegExp(node.topic);
+        if (node.topic.length === 0 || regex.test(topic)) 
           node.send({
             topic,
             payload: msg.getContent(),
