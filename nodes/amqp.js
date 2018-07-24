@@ -85,11 +85,11 @@ module.exports = function (RED) {
           msg.reject(...args);
         };
 
-        const topic = node.topic || msg.fields.routingKey;
+        const topic = msg.fields.routingKey;
         var regex = new RegExp(node.topic);
         if (node.topic.length === 0 || regex.test(topic)) 
           node.send({
-            topic,
+            topic: topic,
             payload: msg.getContent(),
             amqpMessage: msg
           });
