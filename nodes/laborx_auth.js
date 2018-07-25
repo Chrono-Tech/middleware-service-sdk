@@ -5,13 +5,12 @@
 
 const  _ = require('lodash'),
   request = require('request-promise'),
-  mongoose = require('mongoose'),
-  {URL} = require('url');
+  mongoose = require('mongoose');
 
 const getAddressesFromLaborx = async (providerPath, msg) => {
   const response = await request({
-    method: 'POST',
-    uri: new URL('signin/signature/addresses', providerPath),
+    method: 'GET',
+    uri: providerPath + '/me/addresses',
     json: true,
     headers: {
       'Authorization': msg.req.headers.authorization
@@ -61,7 +60,7 @@ module.exports = function (RED) {
     }
     
     const providerPath = redConfig.configprovider === '0' ? redConfig.providerpath : 
-      _.get(ctx.settings, 'laborx.authProvider') || 'http://localhost:3001';
+      _.get(ctx.settings, 'laborx.authProvider') || 'http://localhost:3001/api/v1/security';
 
     this.on('input', async function (msg) {
       let models, origName, profileModel;
