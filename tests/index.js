@@ -16,7 +16,6 @@ const postAddress = require('./helpers/optionsOfRequests').postAddress;
 const deleteAddress = require('./helpers/optionsOfRequests').deleteAddress;
 
 //let connection, queue;
-    
 describe('testing API node-red', function () {
   // it('Sending Message to RabbitMQ Server', function (done){
   //   let content;
