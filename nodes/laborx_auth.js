@@ -35,7 +35,7 @@ const saveAddressesToMongo = async (profileModel, token, addresses) => {
   });
 };
 
-const isAuth = (msg) => { return _.get(msg.req, 'headers.authorization') !== null; };
+const isAuth = (msg) => { return _.get(msg.req, 'headers.authorization', '') !== ''; };
 
 const isToken = (nameToken) => { 
   return nameToken === 'Bearer';
@@ -62,19 +62,19 @@ module.exports = function (RED) {
     const providerPath = redConfig.configprovider === '0' ? redConfig.providerpath : 
       _.get(ctx.settings, 'laborx.authProvider') || 'http://localhost:3001/api/v1/security';
 
-    this.on('input', async function (msg) {
+    this.on('input', async  (msg) => {
       let models, origName, profileModel;
       if (useCache) {
         models = (connection).modelNames();
         origName = _.find(models, m => m.toLowerCase() === tableName.toLowerCase());
         if (!origName) 
-          return node.error('not found profileModel in connections', 'not right profileModel');
+          return node.error('not found profileModel in connections', 'not right profileModel', msg);
         profileModel = connection.models[origName];
       }
 
       if (!isAuth(msg)) {
         msg.statusCode = '400';
-        return node.error('Not set authorization headers');
+        return node.error('Not set authorization headers', msg);
       }
 
       const authorization = _.get(msg, 'req.headers.authorization');
@@ -92,7 +92,7 @@ module.exports = function (RED) {
           await saveAddressesToMongo(profileModel, params[1], addresses);
       } catch (err) {
         msg.statusCode = '401';
-        return node.error(err);
+        return node.error(err, msg);
       }
 
       node.send(msg);

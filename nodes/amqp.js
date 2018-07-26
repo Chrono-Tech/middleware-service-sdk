@@ -22,7 +22,6 @@ module.exports = function (RED) {
       await node.server.claimConnection();
 
       const serviceName = _.get(ctx.settings, node.configName + '.serviceName');
-      console.log(node.topic, node.configName, serviceName, 'SDFSDFSDFSD');
 
       node.queue = node.server.connection.declareQueue(`${serviceName}.${node.id}`, {durable: node.durableQueue === '1'});
 

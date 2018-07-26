@@ -73,7 +73,6 @@ describe('testing API node-red', function () {
 
 
   it('get auth right from db', (done) => {
-    const profileModel = require('./models/profileModel');
     request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
       config.dev.signature}}, (err, res) => {
       if (err || res.statusCode !== 200) 
