@@ -72,6 +72,8 @@ let config = {
         },
         laborx: {
           authProvider: 'http://localhost:3001',
+          dbAlias: 'accounts',
+          useCache: true,
           profileModel: 'sdkProfile'
         }
       }

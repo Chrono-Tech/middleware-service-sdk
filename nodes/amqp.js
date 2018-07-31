@@ -85,11 +85,14 @@ module.exports = function (RED) {
           msg.reject(...args);
         };
 
-        node.send({
-          topic: node.topic || msg.fields.routingKey,
-          payload: msg.getContent(),
-          amqpMessage: msg
-        });
+        const topic = msg.fields.routingKey;
+        var regex = new RegExp(node.topic);
+        if (node.topic.length === 0 || regex.test(topic)) 
+          node.send({
+            topic: topic,
+            payload: msg.getContent(),
+            amqpMessage: msg
+          });
       }
 
       try {
