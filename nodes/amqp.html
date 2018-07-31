@@ -59,7 +59,10 @@
     </div>
 
 
-
+    <div class="form-row">
+      <label for="node-input-configname"></label>
+      <input type="text" id="node-input-configname" placeholder="AMQP exchange config name setting in config">
+   </div>
     <div class="form-row">
         <label for="node-input-srcname"></label>
         <input type="text" id="node-input-ioname" placeholder="AMQP exchange or queue name">
@@ -131,6 +134,10 @@
         <label for="node-input-ioname"></label>
         <input type="text" id="node-input-ioname" placeholder="AMQP exchange or queue name">
     </div>
+    <div class="form-row">
+      <label for="node-input-configname"></label>
+      <input type="text" id="node-input-configname" placeholder="AMQP exchange config name setting in config">
+   </div>
     <div class="form-row">
         <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
         <input type="text" id="node-input-topic" placeholder="Leave empty to use the topic of the message">
@@ -236,6 +243,7 @@
     defaults: {
       name: {value: ""},
       topic: {value: ""},
+      configname: {value: "rabbit"},
       iotype: {value: "4", required: true},
       ioname: {value: "", required: true},
       noack: {value: "0", required: true},
@@ -286,6 +294,7 @@
     defaults: {
       name: {value: ""},
       topic: {value: ""},
+      configname: {value: "rabbit"},
       iotype: {value: "0", required: true},
       ioname: {value: "", required: true},
       server: {type: "amqp-server", required: false},
