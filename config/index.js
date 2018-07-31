@@ -71,7 +71,9 @@ let config = {
           serviceName: 'app_sdk'
         },
         laborx: {
-          authProvider: 'http://localhost:3001',
+          authProvider: 'http://localhost:3001/api/v1/security',
+          dbAlias: 'accounts',
+          useCache: true,
           profileModel: 'sdkProfile'
         }
       }

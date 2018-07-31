@@ -12,7 +12,7 @@ module.exports = function (RED) {
   async function initialize (node) {
 
     if (!node.server)
-      node.server = new AmqpServer({servermode: '1'});
+      node.server = new AmqpServer({servermode: '1', configname: node.configName});
 
     const ctx =  node.context().global;
 
@@ -21,7 +21,9 @@ module.exports = function (RED) {
     try {
       await node.server.claimConnection();
 
-      node.queue = node.server.connection.declareQueue(`${ctx.settings.rabbit.serviceName}.${node.id}`, {durable: node.durableQueue === '1'});
+      const serviceName = _.get(ctx.settings, node.configName + '.serviceName');
+
+      node.queue = node.server.connection.declareQueue(`${serviceName}.${node.id}`, {durable: node.durableQueue === '1'});
 
       if (node.ioType !== '4') {
         node.exchange = node.server.connection.declareExchange(node.ioName, exchangeTypes[node.ioType], {durable: node.durableExchange === '1'});
@@ -63,6 +65,7 @@ module.exports = function (RED) {
     node.ioType = n.iotype;
     node.noack = n.noack;
     node.ioName = n.ioname;
+    node.configName = n.configname || 'rabbit';
     node.durableQueue = n.durablequeue;
     node.durableExchange = n.durableexchange;
     node.server = RED.nodes.getNode(n.server);
@@ -85,11 +88,14 @@ module.exports = function (RED) {
           msg.reject(...args);
         };
 
-        node.send({
-          topic: node.topic || msg.fields.routingKey,
-          payload: msg.getContent(),
-          amqpMessage: msg
-        });
+        const topic = msg.fields.routingKey;
+        var regex = new RegExp(node.topic);
+        if (node.topic.length === 0 || regex.test(topic)) 
+          node.send({
+            topic: topic,
+            payload: msg.getContent(),
+            amqpMessage: msg
+          });
       }
 
       try {
@@ -117,6 +123,7 @@ module.exports = function (RED) {
     node.noack = n.noack;
     node.durable = n.durable;
     node.ioName = n.ioname;
+    node.configName = n.configname || 'rabbit';
     node.server = RED.nodes.getNode(n.server);
     // set amqp node type initialization parameters
     node.amqpType = 'output';
@@ -151,6 +158,7 @@ module.exports = function (RED) {
     node.topology = n.topology;
     node.clientCount = 0;
     node.servermode = n.servermode;
+    node.configName = n.configname || 'rabbit';
     node.connectionPromise = null;
     node.connection = null;
     node.claimConnection = async function () {
@@ -169,9 +177,11 @@ module.exports = function (RED) {
 
       try {
 
-        node.connection = new amqp.Connection(node.servermode === '1' ? ctx.settings.rabbit.url : urlType + credentials + urlLocation);
+        const configUrl = _.get(ctx.settings, node.configName + '.url');
+        const url = node.servermode === '1' ? configUrl : urlType + credentials + urlLocation;
+        node.connection = new amqp.Connection(url);
         node.connectionPromise = await node.connection.initialized;
-        node.log('Connected to AMQP server ' + urlType + urlLocation);
+        node.log('Connected to AMQP server ' + url);
         if (node.useTopology) {
           let topology = JSON.parse(node.topology);
           node.connectionPromise = await node.connection.declareTopology(topology);
