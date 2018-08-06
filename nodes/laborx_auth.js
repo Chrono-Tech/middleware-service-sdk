@@ -9,8 +9,8 @@ const  _ = require('lodash'),
 
 const getAddressesFromLaborx = async (providerPath, msg) => {
   const response = await request({
-    method: 'GET',
-    uri: providerPath + '/me/addresses',
+    method: 'POST',
+    uri: providerPath + '/signin/signature/chronomint',
     json: true,
     headers: {
       'Authorization': msg.req.headers.authorization
