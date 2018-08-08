@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.id = 'clearMongo ' + Date.now();
+module.exports.id = '0.0.clearMongo ' + Date.now();
 
 /**
  * @description tabs flow settings
@@ -8,10 +8,10 @@ module.exports.id = 'clearMongo ' + Date.now();
  */
 
 module.exports.up = function (done) {
-  let coll = this.db.collection('noderedstorages');
-  coll.remove({}, () => {
-    let col = this.db.collection('_migrations');
-    col.remove({}, done);
+  this.db.collection('noderedstorages').remove({}, () => {
+    this.db.collection('noderedusers').remove({}, () => {
+      this.db.collection('_migrations').remove({}, done);
+    });
   });
 };
 

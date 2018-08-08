@@ -15,9 +15,20 @@ const mm = require('mongodb-migrations'),
   log = bunyan.createLogger({name: 'migrator'});
 
 
+const clearMigrations = async (uri, collection) => {
+  let migrator = new mm.Migrator({
+    url: uri,
+    collection: collection
+  }, (level, message) => log.info(level, message));
+
+  migrator.add(clearMongoMigration);
+  await Promise.promisifyAll(migrator).migrateAsync();
+  migrator.dispose();
+};
+
 module.exports = async (uri, folder, collection, clearMongo) => {
 
-  let migrations = _.values(
+  const migrations = _.values(
     requireAll({
       dirname: path.resolve(folder),
       recursive: false,
@@ -26,9 +37,9 @@ module.exports = async (uri, folder, collection, clearMongo) => {
   );
 
   if (clearMongo) 
-    migrations.unshift(clearMongoMigration);
+    await clearMigrations(uri, collection);
 
-  let migrator = new mm.Migrator({
+  const migrator = new mm.Migrator({
     url: uri,
     directory: 'migrations',
     collection: collection
