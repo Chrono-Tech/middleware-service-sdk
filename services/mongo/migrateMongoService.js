@@ -6,15 +6,27 @@
 require('dotenv').config();
 
 const mm = require('mongodb-migrations'),
-  config = require('../../config'),
   path = require('path'),
   bunyan = require('bunyan'),
   _ = require('lodash'),
   requireAll = require('require-all'),
+  clearMongoMigration =require('../../migrations/clearMongo'),
   Promise = require('bluebird'),
   log = bunyan.createLogger({name: 'migrator'});
 
-module.exports = async (uri = config.nodered.mongo.uri, folder = config.nodered.migrationsDir, collection = '_migrations') => {
+
+const clearMigrations = async (uri, collection) => {
+  let migrator = new mm.Migrator({
+    url: uri,
+    collection: collection
+  }, (level, message) => log.info(level, message));
+
+  migrator.add(clearMongoMigration);
+  await Promise.promisifyAll(migrator).migrateAsync();
+  migrator.dispose();
+};
+
+module.exports = async (uri, folder, collection, clearMongo) => {
 
   const migrations = _.values(
     requireAll({
@@ -24,13 +36,18 @@ module.exports = async (uri = config.nodered.mongo.uri, folder = config.nodered.
     })
   );
 
-  let migrator = new mm.Migrator({
+  if (clearMongo) 
+    await clearMigrations(uri, collection);
+
+  const migrator = new mm.Migrator({
     url: uri,
     directory: 'migrations',
     collection: collection
   }, (level, message) => log.info(level, message));
 
-  const filteredMigrations = _.sortBy(migrations, item => parseInt(item.id.split('.')[0]));
+  const filteredMigrations = _.sortBy(
+    migrations, item => parseInt(item.id.split('.')[0])
+  );
 
   migrator.bulkAdd(filteredMigrations);
   await Promise.promisifyAll(migrator).migrateAsync();
