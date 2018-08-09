@@ -5,12 +5,26 @@
 
 require('dotenv').config();
 
-const config = require('./config'),
-  migrateLocalService = require('./services/local/migrateLocalService'),
+const migrateLocalService = require('./services/local/migrateLocalService'),
   migrateMongoService = require('./services/mongo/migrateMongoService');
 
-module.exports.run = async (uri = config.nodered.mongo.uri, folder = config.nodered.migrationsDir, collection = '_migrations', useLocalStorage = false) => {
-  useLocalStorage ? await migrateLocalService(uri, folder) : await migrateMongoService(uri, folder, collection);
+module.exports.run = async (
+  config = {
+    nodered: {
+      useLocalStorage: false,
+      migrationsInOneFile: true,
+      mongo: {uri: ''}
+    }
+  },
+  folder,
+  collection = '_migrations'
+) => {
+  const useLocalStorage = config.nodered.useLocalStorage || false;
+  const uri = config.nodered.mongo.uri;
+  const clearMongo = config.nodered.migrationsInOneFile || false;
+  useLocalStorage ? 
+    await migrateLocalService(uri, folder) : 
+    await migrateMongoService(uri, folder, collection, clearMongo);
 };
 
 require('make-runnable');
