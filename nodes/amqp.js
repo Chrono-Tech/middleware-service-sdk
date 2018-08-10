@@ -96,6 +96,8 @@ module.exports = function (RED) {
             payload: msg.getContent(),
             amqpMessage: msg
           });
+        else
+          msg.ackMsg();
       }
 
       try {
@@ -134,7 +136,6 @@ module.exports = function (RED) {
           new amqp.Message(msg);
 
         let topic = _.template(node.topic || msg.topic)({config: ctx.settings});
-        console.log('SUPPPPPPEEERRRR', topic);
         message.sendTo(node.exchange || node.queue, topic);
       });
     };

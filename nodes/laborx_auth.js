@@ -20,7 +20,7 @@ const getAddressesFromLaborx = async (providerPath, msg) => {
       'Authorization': msg.req.headers.authorization
     }
   });
-  if (!_.get(response, 'addresses')) 
+  if (_.get(response, 'addresses', null) == null) 
     throw new Error('not found addresses from auth response ' + response);
   return response.addresses;
 };
@@ -98,18 +98,18 @@ module.exports = function (RED) {
         msg.statusCode = '400';
         return this.error('Not set authorization headers', msg);
       }
-
       const providerPath = redConfig.configprovider === '0' ? redConfig.providerpath : 
         _.get(ctx.settings, 'laborx.authProvider') || 'http://localhost:3001/api/v1/security';
 
       try {
-        await new Promise(async (res) => {
-          await checkAuth(msg, useCacheConfig, profileModel, providerPath);
+        await new Promise(async (res, rej) => {
+          await checkAuth(msg, useCacheConfig, profileModel, providerPath)
+            .catch(e => { rej(e);  });
           res();
         }).timeout(TIMEOUT);
       } catch (err) {
         msg.statusCode = '401';
-        msg.error = err;
+        msg.error = err.toString();
         return this.error('ERROR', msg);
       }
 

@@ -16,7 +16,10 @@ module.exports = function (RED) {
       if (!message[redConfig['addr']]) {
         if(msg.amqpMessage)
           msg.amqpMessage.ackMsg();
-        node.error('not right name param in laborx auth created/deleted amqp message - skip it', msg);
+        return node.error(
+          'not right name param in laborx auth created/deleted amqp message - skip it', 
+          msg
+        );
       }
 
       msg.payload= {address: message[redConfig['addr']]};
