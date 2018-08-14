@@ -51,7 +51,7 @@ describe('testing API node-red', function () {
     ctx.restPid = spawn('node', ['tests/processes/rest.js'], {
       env: process.env, stdio: 'ignore'
     });
-    await Promise.delay(10000);
+   await Promise.delay(10000);
   });
 
   after(async () => {
@@ -79,7 +79,6 @@ describe('testing API node-red', function () {
   });
 
   it('get auth right', (done) => {
-      console.log(config.dev.signature);
     request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
       config.dev.signature}}, (err, res) => {
       if (err || res.statusCode !== 200) 
@@ -94,7 +93,6 @@ describe('testing API node-red', function () {
 
 
   it('get auth right from db', (done) => {
-      console.log(config.dev.signature);
     request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
       config.dev.signature}}, (err, res) => {
       if (err || res.statusCode !== 200) 

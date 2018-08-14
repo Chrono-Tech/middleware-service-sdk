@@ -17,16 +17,10 @@ before_install:
 
 install:
   - sudo rabbitmq-plugins enable rabbitmq_web_stomp
-  - npm install
-  - npm install -g pm2
 
 
 script:
   - sleep 60 && npm test -- --coverage
-
-after_script:
-  - pm2 logs --nostream
-  - pm2 kill && pkill PM2
 
 notifications:
   email: false
