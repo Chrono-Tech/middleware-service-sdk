@@ -8,12 +8,15 @@
 const Promise = require('bluebird');
 const request = require('request');
 const amqp = require('amqp-ts');
+const spawn = require('child_process').spawn;
 const expect = require('chai').expect;
 
 const config = require('./config');
 
 const postAddress = require('./helpers/optionsOfRequests').postAddress;
 const deleteAddress = require('./helpers/optionsOfRequests').deleteAddress;
+
+const ctx = {};
 
 //let connection, queue;
 describe('testing API node-red', function () {
@@ -38,6 +41,24 @@ describe('testing API node-red', function () {
   //     });
   //   });
   // });
+  
+  
+  before(async () => {
+
+    ctx.laborxPid = spawn('node', ['tests/processes/laborxProxy.js'], {
+      env: process.env, stdio: 'ignore'
+    });
+    ctx.restPid = spawn('node', ['tests/processes/rest.js'], {
+      env: process.env, stdio: 'ignore'
+    });
+   await Promise.delay(10000);
+  });
+
+  after(async () => {
+    ctx.laborxPid.kill();
+    ctx.restPid.kill();
+  });
+
 
   it('add address', (done) => {
     request(postAddress, (err, res) => {
@@ -75,7 +96,7 @@ describe('testing API node-red', function () {
     request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
       config.dev.signature}}, (err, res) => {
       if (err || res.statusCode !== 200) 
-        return done(err || res.statusCode);
+        return done(err || res);
       expect(JSON.parse(res.body), {
         'ethereum-public-key': config.dev['ethereum-public-key'], 
         'nem-address': config.dev['nem-address']
