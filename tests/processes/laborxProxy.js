@@ -23,7 +23,7 @@ app.post('/signin/signature/addresses', function(req, res) {
     }));
     return;
   }
-  res.status(401).send('not right authorization token');
+  res.status(401).send('not right authorization token, right=' + config.dev.signature);
 });
 
 

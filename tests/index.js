@@ -79,6 +79,7 @@ describe('testing API node-red', function () {
   });
 
   it('get auth right', (done) => {
+      console.log(config.dev.signature);
     request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
       config.dev.signature}}, (err, res) => {
       if (err || res.statusCode !== 200) 
@@ -93,10 +94,11 @@ describe('testing API node-red', function () {
 
 
   it('get auth right from db', (done) => {
+      console.log(config.dev.signature);
     request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
       config.dev.signature}}, (err, res) => {
       if (err || res.statusCode !== 200) 
-        return done(err || res.statusCode);
+        return done(err || res);
       expect(JSON.parse(res.body), {
         'ethereum-public-key': config.dev['ethereum-public-key'], 
         'nem-address': config.dev['nem-address']
