@@ -3,7 +3,7 @@
  * Licensed under the AGPL Version 3 licenses.
  */
 
-const  _ = require('lodash'),
+const _ = require('lodash'),
   request = require('request-promise'),
   Promise = require('bluebird'),
   mongoose = require('mongoose');
@@ -20,7 +20,7 @@ const getAddressesFromLaborx = async (providerPath, msg) => {
       'Authorization': msg.req.headers.authorization
     }
   });
-  if (_.get(response, 'addresses', null) == null) 
+  if (_.get(response, 'addresses', null) == null)
     throw new Error('not found addresses from auth response ' + response);
   return response.addresses;
 };
@@ -47,9 +47,11 @@ const saveAddressesToMongo = async (profileModel, token, addresses) => {
   });
 };
 
-const isAuth = (msg) => { return _.get(msg.req, 'headers.authorization', '') !== ''; };
+const isAuth = (msg) => {
+  return _.get(msg.req, 'headers.authorization', '') !== '';
+};
 
-const isToken = (nameToken) => { 
+const isToken = (nameToken) => {
   return nameToken === 'Bearer';
 };
 
@@ -59,24 +61,25 @@ const checkAuth = async (msg, useCacheConfig, profileModel, providerPath) => {
   const useCache = (useCacheConfig && isToken(params[0]));
   if (useCache) {
     msg.addresses = await getAddressesFromMongo(profileModel, params[1]);
-    if (msg.addresses) 
+    if (msg.addresses)
       return msg;
   }
-  
+
   let addresses = await getAddressesFromLaborx(providerPath, msg);
   msg.addresses = addresses;
-  if (useCache) 
+  if (useCache)
     await saveAddressesToMongo(profileModel, params[1], addresses);
   return msg;
-}
+};
 
 module.exports = function (RED) {
   function ExtractCall (redConfig) {
     RED.nodes.createNode(this, redConfig);
     let node = this;
 
-    const ctx =  node.context().global;
-    const useCacheConfig = _.get(ctx.settings, 'laborx.useCache') || true;
+    const ctx = node.context().global;
+    const useAuthConfig = _.has(ctx.settings, 'laborx.useAuth') ? ctx.settings.laborx.useAuth : false;
+    const useCacheConfig = _.has(ctx.settings, 'laborx.useCache') ? ctx.settings.laborx.useCache : false;
 
     let dbAlias, tableName, connection;
     if (useCacheConfig) {
@@ -87,8 +90,12 @@ module.exports = function (RED) {
         `connections.primary.${dbAlias}`
       ) || mongoose;
     }
-    
-    this.on('input', async  (msg) => {
+
+    this.on('input', async (msg) => {
+
+      if (!useAuthConfig)
+        return node.send(msg);
+
       let profileModel;
       if (useCacheConfig) {
         profileModel = findModel(connection, tableName, msg)
@@ -98,13 +105,15 @@ module.exports = function (RED) {
         msg.statusCode = '400';
         return this.error('Not set authorization headers', msg);
       }
-      const providerPath = redConfig.configprovider === '0' ? redConfig.providerpath : 
+      const providerPath = redConfig.configprovider === '0' ? redConfig.providerpath :
         _.get(ctx.settings, 'laborx.authProvider') || 'http://localhost:3001/api/v1/security';
 
       try {
         await new Promise(async (res, rej) => {
           await checkAuth(msg, useCacheConfig, profileModel, providerPath)
-            .catch(e => { rej(e);  });
+            .catch(e => {
+              rej(e);
+            });
           res();
         }).timeout(TIMEOUT);
       } catch (err) {
