@@ -74,6 +74,7 @@ let config = {
           authProvider: 'http://localhost:3001/api/v1/security',
           dbAlias: 'accounts',
           useCache: true,
+          useAuth: true,
           profileModel: 'sdkProfile'
         }
       }

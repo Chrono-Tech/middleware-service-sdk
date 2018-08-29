@@ -76,6 +76,10 @@ module.exports = function (RED) {
     let node = this;
 
     const ctx =  node.context().global;
+    const useAuthConfig = _.get(ctx.settings, 'laborx.useAuth') || true;
+    if (!useAuthConfig) 
+        return node.send(msg);
+
     const useCacheConfig = _.get(ctx.settings, 'laborx.useCache') || true;
 
     let dbAlias, tableName, connection;
