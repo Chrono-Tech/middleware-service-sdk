@@ -7,12 +7,11 @@ module.exports.id = '0.0.clearMongo ' + Date.now();
  * @param done
  */
 
-module.exports.up = function (done) {
-  this.db.collection('noderedstorages').remove({}, () => {
-    this.db.collection('noderedusers').remove({}, () => {
-      this.db.collection('_migrations').remove({}, done);
-    });
-  });
+module.exports.up = async function (done) {
+  await this.db.collection('noderedstorages').remove({});
+  await this.db.collection('noderedusers').remove({});
+  await this.db.collection('_migrations').remove({});
+  done();
 };
 
 module.exports.down = function (done) {
