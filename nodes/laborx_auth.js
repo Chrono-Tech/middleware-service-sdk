@@ -26,8 +26,8 @@ const getAddressesFromLaborx = async (providerPath, msg) => {
 };
 
 const findModel = (connection, tableName, msg) => {
-  models = (connection).modelNames();
-  origName = _.find(models, m => m.toLowerCase() === tableName.toLowerCase());
+  let models = (connection).modelNames();
+  let origName = _.find(models, m => m.toLowerCase() === tableName.toLowerCase());
   if (!origName) {
     msg.error = {message: 'not right profileModel'};
     return this.error('not found profileModel in connections', msg);
@@ -109,13 +109,7 @@ module.exports = function (RED) {
         _.get(ctx.settings, 'laborx.authProvider') || 'http://localhost:3001/api/v1/security';
 
       try {
-        await new Promise(async (res, rej) => {
-          await checkAuth(msg, useCacheConfig, profileModel, providerPath)
-            .catch(e => {
-              rej(e);
-            });
-          res();
-        }).timeout(TIMEOUT);
+        await Promise.resolve(checkAuth(msg, useCacheConfig, profileModel, providerPath)).timeout(TIMEOUT);
       } catch (err) {
         msg.statusCode = '401';
         msg.error = err.toString();
