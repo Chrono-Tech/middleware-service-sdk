@@ -10,7 +10,7 @@ const mm = require('mongodb-migrations'),
   bunyan = require('bunyan'),
   _ = require('lodash'),
   requireAll = require('require-all'),
-  clearMongoMigration =require('../../migrations/clearMongo'),
+  clearMongoMigration = require('../../migrations/clearMongo'),
   Promise = require('bluebird'),
   log = bunyan.createLogger({name: 'migrator'});
 
@@ -36,7 +36,7 @@ module.exports = async (uri, folder, collection, clearMongo) => {
     })
   );
 
-  if (clearMongo) 
+  if (clearMongo)
     await clearMigrations(uri, collection);
 
   const migrator = new mm.Migrator({

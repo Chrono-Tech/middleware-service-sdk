@@ -4,16 +4,13 @@
 * @author Kirill Sergeev <cloudkserg11@gmail.com>
 */
 
-const config = require('../config/index'),
+const config = require('../config'),
   mongoose = require('mongoose'),
-  Promise = require('bluebird'),
   path = require('path'),
   migrator = require('../../index').migrator,
-  _ = require('lodash'),
   redInitter = require('../../index').init;
 
 const init = async () => {
-
 
   mongoose.connect(config.nodered.mongo.uri, {useMongoClient: true});
   require('require-all')({

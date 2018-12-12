@@ -7,7 +7,6 @@
 
 const Promise = require('bluebird');
 const request = require('request');
-const amqp = require('amqp-ts');
 const spawn = require('child_process').spawn;
 const expect = require('chai').expect;
 
@@ -20,38 +19,17 @@ const ctx = {};
 
 //let connection, queue;
 describe('testing API node-red', function () {
-  // it('Sending Message to RabbitMQ Server', function (done){
-  //   let content;
-  //   const rabbit = config.nodered.functionGlobalContext.settings.rabbit;
 
-  //   Promise.delay(400).then(() => {
-  //     connection = new amqp.Connection(rabbit.url);
-  //     request(postAddress);
-  //     queue = connection.declareQueue(`${rabbit.serviceName}.8910ae06.71de7`, {durable: false});
-  //     queue.activateConsumer(function (message) {
-  //       content = message.getContent();
-  //     }, {noAck: false}).then(() => {
-  //       try {
-  //         console.log(content);
-  //         expect(content).to.not.be.undefined;
-  //         done();
-  //       } catch (err) {
-  //         done(err);
-  //       }
-  //     });
-  //   });
-  // });
-  
-  
   before(async () => {
 
     ctx.laborxPid = spawn('node', ['tests/processes/laborxProxy.js'], {
-      env: process.env, stdio: 'ignore'
+      env: process.env, stdio: 'inherit'
     });
     ctx.restPid = spawn('node', ['tests/processes/rest.js'], {
       env: process.env, stdio: 'ignore'
     });
-   await Promise.delay(10000);
+
+    await Promise.delay(10000);
   });
 
   after(async () => {
@@ -79,12 +57,17 @@ describe('testing API node-red', function () {
   });
 
   it('get auth right', (done) => {
-    request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
-      config.dev.signature}}, (err, res) => {
-      if (err || res.statusCode !== 200) 
+    request('http://localhost:8081/secret', {
+      'headers': {
+        Authorization: 'Bearer ' +
+          config.dev.signature
+      }
+    }, (err, res) => {
+      if (err || res.statusCode !== 200)
         return done(err || res.statusCode);
+
       expect(JSON.parse(res.body), {
-        'ethereum-public-key': config.dev['ethereum-public-key'], 
+        'ethereum-public-key': config.dev['ethereum-public-key'],
         'nem-address': config.dev['nem-address']
       });
       done();
@@ -93,12 +76,16 @@ describe('testing API node-red', function () {
 
 
   it('get auth right from db', (done) => {
-    request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer ' + 
-      config.dev.signature}}, (err, res) => {
-      if (err || res.statusCode !== 200) 
+    request('http://localhost:8081/secret', {
+      'headers': {
+        Authorization: 'Bearer ' +
+          config.dev.signature
+      }
+    }, (err, res) => {
+      if (err || res.statusCode !== 200)
         return done(err || res);
       expect(JSON.parse(res.body), {
-        'ethereum-public-key': config.dev['ethereum-public-key'], 
+        'ethereum-public-key': config.dev['ethereum-public-key'],
         'nem-address': config.dev['nem-address']
       });
       done();
@@ -112,7 +99,7 @@ describe('testing API node-red', function () {
   });
 
   it('get auth error 401', (done) => {
-    request('http://localhost:8081/secret',{'headers': {Authorization: 'Bearer token1243'}}, 
+    request('http://localhost:8081/secret', {'headers': {Authorization: 'Bearer token1243'}},
       (err, res) => {
         (err || res.statusCode !== 401) ? done(err || res.statusCode) : done();
       });
