@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
-    "amqp-ts": "^1.4.0",
+    "amqplib": "^0.5.3",
     "bcoin": "^1.0.0-beta.15",
     "bcryptjs": "^2.4.3",
-    "body-parser": "^1.18.1",
     "bluebird": "^3.5.1",
+    "body-parser": "^1.18.1",
     "bunyan": "^1.8.12",
     "cors": "^2.8.4",
     "dotenv": "^4.0.0",
@@ -28,7 +28,7 @@
   },
   "scripts": {
     "lint": "node ./node_modules/eslint/bin/eslint.js -c .eslintrc.js --ext .js --fix --ignore-path .eslintignore .",
-    "test": "node ./node_modules/mocha/bin/mocha -t 90000 tests",
+    "test": "npx mocha -t 90000 tests",
     "migrate_red": "node migrate run"
   },
   "author": "chronobank",

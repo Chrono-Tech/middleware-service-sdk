@@ -16,8 +16,7 @@ before_install:
 
 
 install:
-  - sudo rabbitmq-plugins enable rabbitmq_web_stomp
-
+  - npm install
 
 script:
   - sleep 60 && npm test -- --coverage
