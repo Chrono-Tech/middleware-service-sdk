@@ -7,7 +7,7 @@ class AmqpOut {
 
     this.ctx = this.context().global;
     AmqpOut.RED.nodes.createNode(this, node);
-    this.topic = node.topic;
+    this.topic = _.template(node.topic)({config: this.ctx.settings});
     this.ioType = node.iotype;
     this.noack = node.noack;
     this.durable = node.durable;
@@ -31,13 +31,11 @@ class AmqpOut {
 
     let topic = _.template(this.topic || msg.topic)({config: this.ctx.settings});
 
-    console.log(topic);
-
-    if (this.ioType === '4') {
+    if (this.ioType === '4') 
       this.server.channel.sendToQueue(this.ioName, Buffer.from(msg.payload));
-    } else {
+    else 
       this.server.channel.publish(this.ioName, topic, Buffer.from(msg.payload));
-    }
+    
 
   }
 
