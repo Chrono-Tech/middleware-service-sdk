@@ -11,11 +11,18 @@ module.exports = function (RED) {
     let node = this;
 
     this.on('input', async function (msg) {
+      try {
+          const message = JSON.parse(msg.payload);
+      } catch (e) {
+        msg.ackMsg();
+        return node.error(
+          'not right amqp message - skip it', 
+          msg
+        );
+      }
 
-      const message = JSON.parse(msg.payload);
       if (!message[redConfig['addr']]) {
-        if(msg.amqpMessage)
-          msg.amqpMessage.ackMsg();
+        msg.ackMsg();
         return node.error(
           'not right name param in laborx auth created/deleted amqp message - skip it', 
           msg
