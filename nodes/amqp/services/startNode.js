@@ -15,15 +15,16 @@ module.exports = async (node, RED) => {
 
     const serviceName = _.get(ctx.settings, node.configName + '.serviceName');
 
-//    node.queue = node.server.connection.declareQueue(`${serviceName}.${node.id}`, {durable: node.durableQueue === '1'});
-    node.queueName = node.ioType === '4' ? node.ioName : `${serviceName}.${node.id}`;
-
-    await node.server.channel.assertQueue(node.queueName, {durable: node.durableQueue === '1'});
-
-    if (node.ioType !== '4') {
+    //    node.queue = node.server.connection.declareQueue(`${serviceName}.${node.id}`, {durable: node.durableQueue === '1'});
+    const isNodeHasQueueType = node.ioType === '4';
+    if (isNodeHasQueueType)
       node.server.channel.assertExchange(node.ioName, exchangeTypes[node.ioType], {durable: node.durableExchange === '1'});
-      await node.server.channel.bindQueue(node.queueName, node.ioName, node.topic);
+    if (node.amqpType !== 'output') {
+      node.queueName = isNodeHasQueueType ? node.ioName : `${serviceName}.${node.id}`;
 
+      await node.server.channel.assertQueue(node.queueName, {durable: node.durableQueue === '1'});
+      if (isNodeHasQueueType)
+        await node.server.channel.bindQueue(node.queueName, node.ioName, node.topic);
     }
 
     node.status({fill: 'green', shape: 'dot', text: 'connected'});
