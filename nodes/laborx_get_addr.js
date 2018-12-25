@@ -3,8 +3,6 @@
  * Licensed under the AGPL Version 3 licenses.
  */
 
-const  _ = require('lodash');
-
 module.exports = function (RED) {
   function ExtractAddr (redConfig) {
     RED.nodes.createNode(this, redConfig);
@@ -12,7 +10,16 @@ module.exports = function (RED) {
 
     this.on('input', async function (msg) {
       try {
-          const message = JSON.parse(msg.payload);
+        const message = JSON.parse(msg.payload);
+        if (!message[redConfig['addr']]) {
+            msg.ackMsg();
+            return node.error(
+            'not right name param in laborx auth created/deleted amqp message - skip it', 
+            msg
+            );
+        }
+        msg.payload= {address: message[redConfig['addr']]};
+        node.send(msg);
       } catch (e) {
         msg.ackMsg();
         return node.error(
@@ -20,17 +27,6 @@ module.exports = function (RED) {
           msg
         );
       }
-
-      if (!message[redConfig['addr']]) {
-        msg.ackMsg();
-        return node.error(
-          'not right name param in laborx auth created/deleted amqp message - skip it', 
-          msg
-        );
-      }
-
-      msg.payload= {address: message[redConfig['addr']]};
-      node.send(msg);
     });
   }
 
